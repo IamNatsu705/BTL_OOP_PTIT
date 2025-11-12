@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin - Bình luận</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap");
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      @keyframes fade-in {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      .animate-fade-in {
+        animation: fade-in 0.5s ease-out;
+      }
+      .fill-current {
+        fill: currentColor;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100">
+    <div class="flex h-screen">
+      <aside
+        class="bg-gray-800 text-gray-300 w-64 transition-all duration-300 flex flex-col flex-shrink-0"
+      >
+        <div
+          class="flex items-center justify-center h-16 border-b border-gray-700"
+        >
+          <span class="text-xl font-bold text-white">Quản Trị</span>
+        </div>
+        <nav class="flex-1 px-4 py-6 space-y-2">
+          <a
+            th:href="@{/admin}"
+            class="flex items-center w-full px-4 py-2 rounded-lg transition-colors text-gray-300 hover:bg-gray-700 hover:text-white"
+          >
+            <i data-lucide="bar-chart-2" class="w-5 h-5"></i
+            ><span class="ml-3">Tổng quan</span>
+          </a>
+          <a
+            th:href="@{/admin/courts}"
+            class="flex items-center w-full px-4 py-2 rounded-lg transition-colors text-gray-300 hover:bg-gray-700 hover:text-white"
+          >
+            <i data-lucide="settings" class="w-5 h-5"></i
+            ><span class="ml-3">Quản lý Sân</span>
+          </a>
+          <a
+            th:href="@{/admin/pricing}"
+            class="flex items-center w-full px-4 py-2 rounded-lg transition-colors text-gray-300 hover:bg-gray-700 hover:text-white"
+          >
+            <i data-lucide="tag" class="w-5 h-5"></i
+            ><span class="ml-3">Quản lý Giá</span>
+          </a>
+          <a
+            href="#"
+            class="flex items-center w-full px-4 py-2 rounded-lg transition-colors text-gray-300 hover:bg-gray-700 hover:text-white"
+          >
+            <i data-lucide="credit-card" class="w-5 h-5"></i
+            ><span class="ml-3">Doanh thu</span>
+          </a>
+          <a
+            th:href="@{/admin/customers}"
+            class="flex items-center w-full px-4 py-2 rounded-lg transition-colors text-gray-300 hover:bg-gray-700 hover:text-white"
+          >
+            <i data-lucide="users" class="w-5 h-5"></i
+            ><span class="ml-3">Khách hàng</span>
+          </a>
+          <a
+            th:href="@{/admin/comments}"
+            class="flex items-center w-full px-4 py-2 rounded-lg transition-colors bg-blue-600 text-white"
+          >
+            <i data-lucide="message-square" class="w-5 h-5"></i
+            ><span class="ml-3">Bình luận</span>
+          </a>
+        </nav>
+        <div class="px-4 py-4 border-t border-gray-700">
+          <a
+            th:href="@{/logout}"
+            class="flex items-center w-full px-4 py-2 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white"
+          >
+            <i data-lucide="log-out" class="w-5 h-5"></i
+            ><span class="ml-3">Đăng xuất</span>
+          </a>
+        </div>
+      </aside>
+      <div class="flex-1 flex flex-col overflow-hidden">
+        <header class="bg-white shadow-sm border-b border-gray-200">
+          <div
+            class="flex items-center justify-between h-16 px-6"
+            th:if="${isAuthenticated}"
+          >
+            <button class="text-gray-600">
+              <i data-lucide="menu"></i>
+            </button>
+            <div class="flex items-center space-x-4">
+              <span
+                class="text-gray-700 font-medium"
+                th:text="'Chào, ' + ${currentUser}"
+                >Chào, Quản Trị Viên</span
+              >
+            </div>
+          </div>
+        </header>
+        <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
+          <div class="max-w-7xl mx-auto p-6">
+            <div class="animate-fade-in">
+              <h2 class="text-3xl font-semibold text-gray-800 mb-6">
+                Bình luận từ Khách hàng
+              </h2>
+              <div class="space-y-6">
+                <div
+                  th:each="comment : ${comments}"
+                  class="bg-white p-6 rounded-lg shadow-md relative"
+                >
+                  <form
+                    th:action="@{/admin/comments/delete}"
+                    method="post"
+                    class="absolute top-4 right-4"
+                  >
+                    <input type="hidden" name="id" th:value="${comment.id}" />
+                    <button
+                      type="submit"
+                      class="text-gray-400 hover:text-red-600 transition-colors"
+                      onclick="return confirm('Bạn có chắc chắn muốn xóa bình luận này?');"
+                    >
+                      <i data-lucide="trash-2" class="w-5 h-5"></i>
+                    </button>
+                  </form>
+                  <div class="flex justify-between items-start mb-2 pr-8">
+                    <div>
+                      <p
+                        class="font-semibold text-gray-800"
+                        th:text="${comment.userFullName}"
+                      >
+                        Nguyễn Văn A
+                      </p>
+                      <p
+                        class="text-sm text-gray-500"
+                        th:text="'Ngày: ' + ${comment.created_at}"
+                      >
+                        Ngày: 2025-11-10T18:30:00
+                      </p>
+                    </div>
+                    <div class="flex flex-shrink-0">
+                      <div th:each="i : ${#numbers.sequence(1, 5)}">
+                        <i
+                          data-lucide="star"
+                          class="w-5 h-5"
+                          th:classappend="${i <= comment.rating} ? 'text-yellow-400 fill-current' : 'text-gray-300'"
+                        ></i>
+                      </div>
+                    </div>
+                  </div>
+                  <p class="text-gray-700" th:text="${comment.comment_text}">
+                    Nội dung bình luận.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <script>
+      lucide.createIcons();
+    </script>
+  </body>
+</html>

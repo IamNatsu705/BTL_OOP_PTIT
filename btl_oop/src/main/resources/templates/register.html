@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đăng ký</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap");
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      @keyframes fade-in-up {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .animate-fade-in-up {
+        animation: fade-in-up 0.5s ease-out;
+      }
+    </style>
+  </head>
+  <body class="flex flex-col min-h-screen w-full bg-gray-50">
+    <nav class="bg-white shadow-md sticky top-0 z-40"></nav>
+
+    <main class="flex-1">
+      <div class="flex justify-center items-center py-20 md:py-24 bg-gray-50">
+        <div
+          class="w-full max-w-2xl bg-white rounded-lg shadow-xl p-12 animate-fade-in-up"
+        >
+          <h2 class="text-3xl font-bold text-center text-gray-800 mb-8">
+            Tạo Tài Khoản Mới
+          </h2>
+
+          <!-- Thông báo lỗi -->
+          <p
+            th:if="${error}"
+            class="text-red-500 text-center mb-4"
+            th:text="${error}"
+          ></p>
+
+          <form th:action="@{/register}" method="post" class="space-y-5">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1"
+                  >Họ và tên</label
+                >
+                <div class="relative">
+                  <i
+                    data-lucide="user"
+                    class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+                  ></i>
+                  <input
+                    type="text"
+                    name="fullName"
+                    required
+                    class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1"
+                  >Tên đăng nhập</label
+                >
+                <div class="relative">
+                  <i
+                    data-lucide="user-plus"
+                    class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+                  ></i>
+                  <input
+                    type="text"
+                    name="username"
+                    required
+                    class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1"
+                >Email</label
+              >
+              <div class="relative">
+                <i
+                  data-lucide="mail"
+                  class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+                ></i>
+                <input
+                  type="email"
+                  name="email"
+                  required
+                  class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1"
+                >Số điện thoại</label
+              >
+              <div class="relative">
+                <i
+                  data-lucide="phone"
+                  class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+                ></i>
+                <input
+                  type="tel"
+                  name="phone"
+                  required
+                  class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1"
+                >Mật khẩu</label
+              >
+              <div class="relative">
+                <i
+                  data-lucide="lock"
+                  class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+                ></i>
+                <input
+                  type="password"
+                  name="password"
+                  required
+                  class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1"
+                >Xác nhận mật khẩu</label
+              >
+              <div class="relative">
+                <i
+                  data-lucide="lock"
+                  class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+                ></i>
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  required
+                  class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+
+            <!-- Nút Đăng ký -->
+            <button
+              type="submit"
+              class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-md mt-4"
+            >
+              Đăng Ký
+            </button>
+
+            <!-- Link Đăng nhập -->
+            <p class="text-center text-gray-600 mt-4">
+              Đã có tài khoản?
+              <a
+                th:href="@{/login}"
+                class="text-blue-600 font-semibold hover:underline"
+              >
+                Đăng nhập
+              </a>
+            </p>
+          </form>
+        </div>
+      </div>
+    </main>
+
+    <footer class="bg-gray-800 text-gray-300 mt-16"></footer>
+
+    <!-- Thông báo -->
+    <div
+      th:if="${notificationMessage}"
+      th:classappend="${notificationType == 'success'} ? 'bg-green-500' :
+                         (${notificationType == 'error'} ? 'bg-red-500' : 'bg-blue-500')"
+      class="fixed bottom-5 right-5 p-4 rounded-lg shadow-lg text-white z-50"
+    >
+      <p th:text="${notificationMessage}"></p>
+    </div>
+
+    <script>
+      lucide.createIcons();
+    </script>
+  </body>
+</html>

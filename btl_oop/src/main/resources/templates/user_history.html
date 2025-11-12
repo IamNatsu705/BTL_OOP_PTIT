@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lịch sử đặt sân - Badminton Court</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap");
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      .text-shadow-lg {
+        text-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      }
+    </style>
+  </head>
+  <body class="flex flex-col min-h-screen w-full bg-gray-50">
+    <nav class="bg-white shadow-md sticky top-0 z-40">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <div class="flex-shrink-0">
+            <a th:href="@{/}" class="flex items-center space-x-2">
+              <img
+                class="h-8 w-auto"
+                src="https://img.icons8.com/color/48/badminton-2.png"
+                alt="Logo Sân cầu lông"
+              />
+              <span class="text-xl font-bold text-gray-800"
+                >Badminton Court</span
+              >
+            </a>
+          </div>
+
+          <div class="hidden md:flex md:items-center md:space-x-4">
+            <a
+              th:href="@{/}"
+              class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+              >Trang chủ</a
+            >
+            <a
+              th:href="@{/booking}"
+              class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+              >Đặt sân</a
+            >
+            <a
+              th:href="@{/contact}"
+              class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+              >Liên hệ</a
+            >
+
+            <div th:if="${isAuthenticated}">
+              <div class="relative group">
+                <button
+                  class="flex items-center text-gray-600 hover:text-blue-600 px-3 py-2"
+                >
+                  Chào, <span th:text="${currentUser}">User</span>
+                  <i data-lucide="chevron-down" class="w-4 h-4 ml-1"></i>
+                </button>
+                <div
+                  class="opacity-0 group-hover:opacity-100 invisible group-hover:visible absolute right-0 mt-0 w-48 bg-white rounded-md shadow-lg py-1 z-50 transition-all duration-200"
+                >
+                  <a
+                    th:if="${role == 'admin'}"
+                    th:href="@{/admin}"
+                    class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >Trang Quản Trị</a
+                  >
+                  <a
+                    th:href="@{/profile}"
+                    class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >Thông tin cá nhân</a
+                  >
+                  <a
+                    th:href="@{/history}"
+                    class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >Lịch sử đặt sân</a
+                  >
+                  <a
+                    th:href="@{/logout}"
+                    class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >Đăng xuất</a
+                  >
+                </div>
+              </div>
+            </div>
+
+            <div th:unless="${isAuthenticated}">
+              <a
+                th:href="@{/login}"
+                class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+              >
+                Đăng nhập
+              </a>
+              <a
+                th:href="@{/register}"
+                class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors"
+              >
+                Đăng ký
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <main class="flex-1 py-12">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-8">Lịch sử đặt sân</h1>
+
+        <div
+          th:if="${bookings != null and !bookings.isEmpty()}"
+          class="space-y-6"
+        >
+          <div
+            th:each="booking : ${bookings}"
+            class="bg-white shadow-lg rounded-lg overflow-hidden transition-shadow hover:shadow-xl"
+          >
+            <div class="p-6">
+              <div
+                class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3"
+              >
+                <div>
+                  <h3
+                    class="text-xl font-semibold text-gray-900"
+                    th:text="${booking.courtName}"
+                  >
+                    Sân 2 (Ngoài trời)
+                  </h3>
+                  <p
+                    class="text-sm text-gray-500"
+                    th:text="'Mã đặt sân: #' + ${booking.id}"
+                  >
+                    Mã đặt sân: #12345
+                  </p>
+                </div>
+
+                <span
+                  th:text="${booking.statusText}"
+                  th:classappend="${booking.status == 'UPCOMING'} ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'"
+                  class="inline-block px-3 py-1 rounded-full text-xs font-semibold mt-2 sm:mt-0"
+                >
+                  (Status)
+                </span>
+              </div>
+              <hr class="my-4" />
+              <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+                <div>
+                  <span class="font-medium text-gray-500 block">Ngày</span>
+                  <span
+                    class="font-semibold text-gray-800"
+                    th:text="${booking.date}"
+                    >15-11-2025</span
+                  >
+                </div>
+                <div>
+                  <span class="font-medium text-gray-500 block">Khung giờ</span>
+                  <span
+                    class="font-semibold text-gray-800"
+                    th:text="${booking.timeSlot}"
+                    >18:00 - 19:00</span
+                  >
+                </div>
+                <div>
+                  <span class="font-medium text-gray-500 block">Tổng tiền</span>
+                  <span
+                    class="font-semibold text-gray-800"
+                    th:text="${#numbers.formatDecimal(booking.price, 0, 'POINT', 0, 'COMMA') + ' VNĐ'}"
+                    >80,000 VNĐ</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          th:if="${bookings == null or bookings.isEmpty()}"
+          class="text-center bg-white p-12 rounded-lg shadow-md"
+        >
+          <i
+            data-lucide="calendar-x"
+            class="w-16 h-16 text-gray-400 mx-auto mb-4"
+          ></i>
+          <h2 class="text-xl font-semibold text-gray-700">
+            Chưa có lịch sử đặt sân
+          </h2>
+          <p class="text-gray-500 mt-2">
+            Bạn chưa thực hiện đặt sân nào. Hãy đặt sân ngay!
+          </p>
+          <a
+            th:href="@{/booking}"
+            class="mt-6 inline-block bg-blue-600 text-white px-6 py-2 rounded-lg text-md font-semibold hover:bg-blue-700 transition-colors"
+          >
+            Đặt Sân Ngay
+          </a>
+        </div>
+      </div>
+    </main>
+
+    <footer class="bg-gray-800 text-gray-300 mt-16">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div>
+            <h5 class="text-lg font-bold text-white mb-4">Về chúng tôi</h5>
+            <p class="text-sm">
+              Hệ thống sân cầu lông hiện đại, chất lượng cao, phục vụ đam mê thể
+              thao của bạn.
+            </p>
+          </div>
+          <div>
+            <h5 class="text-lg font-bold text-white mb-4">Liên kết nhanh</h5>
+            <ul class="space-y-2 text-sm">
+              <li><a th:href="@{/}" class="hover:text-white">Trang chủ</a></li>
+              <li>
+                <a th:href="@{/booking}" class="hover:text-white">Đặt sân</a>
+              </li>
+              <li><a href="#" class="hover:text-white">Khuyến mãi</a></li>
+              <li><a href="#" class="hover:text-white">Liên hệ</a></li>
+            </ul>
+          </div>
+          <div>
+            <h5 class="text-lg font-bold text-white mb-4">Liên hệ</h5>
+            <ul class="space-y-2 text-sm">
+              <li class="flex items-center">
+                <i data-lucide="map-pin" class="w-4 h-4 mr-2"></i> 123 Đường
+                ABC, Quận 1, TP. HCM
+              </li>
+              <li class="flex items-center">
+                <i data-lucide="phone" class="w-4 h-4 mr-2"></i> (028) 3812 3456
+              </li>
+              <li class="flex items-center">
+                <i data-lucide="mail" class="w-4 h-4 mr-2"></i>
+                support@sancaulong.com
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h5 class="text-lg font-bold text-white mb-4">
+              Theo dõi chúng tôi
+            </h5>
+            <div class="flex space-x-4"></div>
+          </div>
+        </div>
+        <div class="mt-8 border-t border-gray-700 pt-8 text-center text-sm">
+          <p>&copy; 2025 Badminton Court. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <div
+      th:if="${notificationMessage}"
+      th:classappend="${notificationType == 'success'} ? 'bg-green-500' : (${notificationType == 'error'} ? 'bg-red-500' : 'bg-blue-500')"
+      class="fixed bottom-5 right-5 p-4 rounded-lg shadow-lg text-white z-50"
+    >
+      <p th:text="${notificationMessage}"></p>
+    </div>
+
+    <script>
+      lucide.createIcons();
+    </script>
+  </body>
+</html>

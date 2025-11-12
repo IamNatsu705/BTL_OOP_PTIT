@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đặt sân</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap");
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      @keyframes fade-in {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      .animate-fade-in {
+        animation: fade-in 0.5s ease-out;
+      }
+      /* Thêm style cho loading */
+      #timeSlotContainer.loading {
+        opacity: 0.5;
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body class="flex flex-col min-h-screen w-full bg-gray-50">
+    <nav class="bg-white shadow-md sticky top-0 z-40">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <div class="flex-shrink-0">
+            <a th:href="@{/}" class="flex items-center space-x-2">
+              <img
+                class="h-8 w-auto"
+                src="https://img.icons8.com/color/48/badminton-2.png"
+                alt="Logo Sân cầu lông"
+              />
+              <span class="text-xl font-bold text-gray-800"
+                >Badminton Court</span
+              >
+            </a>
+          </div>
+
+          <div class="hidden md:flex md:items-center md:space-x-4">
+            <a
+              th:href="@{/}"
+              class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+              >Trang chủ</a
+            >
+            <a
+              th:href="@{/booking}"
+              class="text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+              >Đặt sân</a
+            >
+            <a
+              th:href="@{/contact}"
+              class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+              >Liên hệ</a
+            >
+
+            <div th:if="${isAuthenticated}">
+              <div class="relative group">
+                <button
+                  class="flex items-center text-gray-600 hover:text-blue-600 px-3 py-2"
+                >
+                  Chào, <span th:text="${currentUser}">User</span>
+                  <i data-lucide="chevron-down" class="w-4 h-4 ml-1"></i>
+                </button>
+                <div
+                  class="opacity-0 group-hover:opacity-100 invisible group-hover:visible absolute right-0 mt-0 w-48 bg-white rounded-md shadow-lg py-1 z-50 transition-all duration-200"
+                >
+                  <a
+                    th:if="${role == 'admin'}"
+                    th:href="@{/admin}"
+                    class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >Trang Quản Trị</a
+                  >
+                  <a
+                    href="/profile"
+                    class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >Thông tin cá nhân</a
+                  >
+                  <a
+                    href="/history"
+                    class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >Lịch sử đặt sân</a
+                  >
+                  <a
+                    th:href="@{/logout}"
+                    class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >Đăng xuất</a
+                  >
+                </div>
+              </div>
+            </div>
+
+            <div th:unless="${isAuthenticated}">
+              <a
+                th:href="@{/login}"
+                class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+              >
+                Đăng nhập
+              </a>
+              <a
+                th:href="@{/register}"
+                class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors"
+              >
+                Đăng ký
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <main class="flex-1">
+      <form th:action="@{/booking}" method="post" id="bookingForm">
+        <div
+          class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 animate-fade-in"
+        >
+          <h1 class="text-4xl font-bold text-gray-800 mb-10 text-center">
+            Đặt Sân Cầu Lông
+          </h1>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+            <div class="lg:col-span-1 space-y-6">
+              <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h3 class="text-xl font-semibold mb-4 text-gray-700">
+                  1. Chọn ngày
+                </h3>
+                <input
+                  type="date"
+                  id="selectedDate"
+                  name="selectedDate"
+                  th:value="${selectedDate}"
+                  min=""
+                  class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h3 class="text-xl font-semibold mb-4 text-gray-700">
+                  2. Chọn sân
+                </h3>
+                <input
+                  type="hidden"
+                  id="selectedCourtId"
+                  name="selectedCourtId"
+                  th:value="${courts[0].id}"
+                />
+
+                <div
+                  class="space-y-3 max-h-96 overflow-y-auto pr-2"
+                  id="courtList"
+                >
+                  <button
+                    type="button"
+                    th:each="court, iter : ${courts}"
+                    th:data-court-id="${court.id}"
+                    th:data-court-name="${court.name}"
+                    th:disabled="${court.status == 'maintenance'}"
+                    th:classappend="${iter.index == 0 ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-300' : 'border-gray-200 hover:border-blue-400'} + ' ' + ${court.status == 'maintenance' ? 'bg-gray-100 cursor-not-allowed opacity-60' : 'cursor-pointer'}"
+                    class="court-button w-full text-left p-4 rounded-lg border-2 transition-all"
+                  >
+                    <div class="flex justify-between items-center">
+                      <span class="font-semibold" th:text="${court.name}"
+                        >Sân 1</span
+                      >
+                      <span
+                        th:if="${court.status == 'maintenance'}"
+                        class="text-xs font-medium text-red-600"
+                      >
+                        Bảo trì
+                      </span>
+                    </div>
+                    <p
+                      class="text-sm text-gray-500 mt-1"
+                      th:text="${court.description}"
+                    >
+                      Mô tả
+                    </p>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="lg:col-span-2 bg-white p-8 rounded-lg shadow-lg">
+              <h3 class="text-xl font-semibold mb-4 text-gray-700">
+                3. Chọn giờ (Sân:
+                <span id="selectedCourtName" th:text="${courts[0].name}"></span
+                >)
+              </h3>
+              <div class="mb-4 flex flex-wrap gap-4 text-sm"></div>
+
+              <input
+                type="hidden"
+                id="selectedTimeSlots"
+                name="selectedTimeSlots"
+                value=""
+              />
+
+              <div
+                class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3"
+                id="timeSlotContainer"
+              >
+                <p class="col-span-full text-gray-500">Đang tải lịch sân...</p>
+              </div>
+
+              <div class="mt-8 border-t pt-6">
+                <h3 class="text-xl font-semibold mb-4 text-gray-700">
+                  4. Xác nhận
+                </h3>
+                <div class="bg-gray-50 p-6 rounded-lg">
+                  <div id="confirmationDetails">
+                    <p class="text-gray-500">
+                      Vui lòng chọn khung giờ để xem tổng tiền.
+                    </p>
+                  </div>
+                  <input
+                    type="hidden"
+                    id="totalPrice"
+                    name="totalPrice"
+                    value="0"
+                  />
+                  <p
+                    id="totalPriceDisplay"
+                    class="text-2xl font-bold text-gray-800 mt-4"
+                  >
+                    Tổng cộng: <span class="text-blue-600">0 VNĐ</span>
+                  </p>
+                  <p id="errorDisplay" class="text-red-500 mt-2"></p>
+
+                  <button
+                    type="submit"
+                    id="submitBooking"
+                    disabled
+                    class="w-full mt-6 bg-green-600 text-white py-3 px-4 rounded-lg text-lg font-semibold hover:bg-green-700 transition-colors shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed"
+                  >
+                    Xác Nhận Đặt Sân
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </main>
+    <footer class="bg-gray-800 text-gray-300 mt-16"></footer>
+
+    <script th:inline="javascript">
+      /*<![CDATA[*/
+
+      // --- NHẬN DỮ LIỆU BAN ĐẦU (RỖNG) ---
+      let allTemplateSlots = []; // Sẽ được tải 1 lần bằng fetch
+      let bookedSlotIds = new Set(); // Sẽ được tải mỗi khi đổi ngày/sân
+
+      // --- STATE QUẢN LÝ BỞI JAVASCRIPT ---
+      const dateInput = document.getElementById("selectedDate");
+      let selectedDate = dateInput.value; // Lấy giá trị từ th:value
+      let selectedCourtId = document.getElementById("selectedCourtId").value;
+      let selectedTimeSlots = []; // Mảng các SLOT ID [1, 2, 5]
+      let isLoading = false; // State để quản lý loading
+
+      // --- DOM ELEMENTS ---
+      const courtIdInput = document.getElementById("selectedCourtId");
+      const courtListContainer = document.getElementById("courtList");
+      const timeSlotContainer = document.getElementById("timeSlotContainer");
+      const selectedCourtNameEl = document.getElementById("selectedCourtName");
+      const confirmationDetailsEl = document.getElementById(
+        "confirmationDetails"
+      );
+      const totalPriceDisplayEl = document.getElementById("totalPriceDisplay");
+      const errorDisplayEl = document.getElementById("errorDisplay");
+      const submitButton = document.getElementById("submitBooking");
+      const hiddenTimeSlotsInput = document.getElementById("selectedTimeSlots");
+      const bookingForm = document.getElementById("bookingForm");
+
+      // --- LOGIC FUNCTIONS (ĐÃ CẬP NHẬT) ---
+
+      // Set min date cho input
+      dateInput.min = new Date().toISOString().split("T")[0];
+
+      // HÀM MỚI 1: Tải 24 slot mẫu (chỉ gọi 1 lần)
+      async function fetchTemplateSlots() {
+        try {
+          const response = await fetch("/getdata/slots/template");
+          if (!response.ok) {
+            throw new Error("Lỗi khi tải cấu hình slot.");
+          }
+          allTemplateSlots = await response.json();
+        } catch (error) {
+          console.error(error);
+          timeSlotContainer.innerHTML = `<p class="col-span-full text-red-500">Lỗi tải dữ liệu cấu hình. Vui lòng F5.</p>`;
+        }
+      }
+
+      // HÀM MỚI 2: Tải các slot ĐÃ ĐẶT (gọi mỗi khi đổi ngày/sân)
+      async function fetchBookedSlots() {
+        if (isLoading) return; // Chặn gọi liên tục
+        isLoading = true;
+
+        // Hiển thị loading (quan trọng cho UX)
+        timeSlotContainer.innerHTML = `<p class="col-span-full text-gray-500">Đang tải lịch sân...</p>`;
+        timeSlotContainer.classList.add("loading");
+
+        try {
+          const date = selectedDate;
+          const courtId = selectedCourtId;
+
+          const response = await fetch(
+            `/getdata/slots/booked?date=${date}&courtId=${courtId}`
+          );
+          if (!response.ok) {
+            throw new Error("Lỗi khi tải lịch đặt sân.");
+          }
+
+          const idsArray = await response.json(); // Nhận về mảng [1, 5, 10]
+          bookedSlotIds = new Set(idsArray); // Lưu vào Set
+
+          // Sau khi có dữ liệu, render lại
+          renderTimeSlots();
+        } catch (error) {
+          console.error(error);
+          timeSlotContainer.innerHTML = `<p class="col-span-full text-red-500">Lỗi tải dữ liệu lịch. Vui lòng thử lại.</p>`;
+        } finally {
+          isLoading = false; // Cho phép gọi lại
+          timeSlotContainer.classList.remove("loading");
+        }
+      }
+
+      // Kiểm tra các slot đã chọn có liên tục không
+      function isContinuous(slotIds) {
+        if (slotIds.length <= 1) return true;
+
+        const selectedHours = slotIds
+          .map((id) => {
+            const slot = allTemplateSlots.find((s) => s.id === id);
+            return parseInt(slot.time_start.split(":")[0], 10);
+          })
+          .sort((a, b) => a - b);
+
+        for (let i = 0; i < selectedHours.length - 1; i++) {
+          if (selectedHours[i + 1] - selectedHours[i] !== 1) return false;
+        }
+        return true;
+      }
+
+      // Tính tổng tiền
+      function calculateTotal() {
+        if (!isContinuous(selectedTimeSlots)) {
+          return { total: 0, error: "Vui lòng chọn các khung giờ liên tục." };
+        }
+
+        let total = 0;
+        selectedTimeSlots.forEach((slotId) => {
+          const slot = allTemplateSlots.find((s) => s.id === slotId);
+          if (slot) {
+            total += slot.pricing;
+          }
+        });
+        return { total, error: null };
+      }
+
+      // --- RENDER FUNCTIONS (ĐÃ CẬP NHẬT) ---
+
+      function renderTimeSlots() {
+        timeSlotContainer.innerHTML = ""; // Xóa slot cũ
+
+        // 'allTemplateSlots' là mảng 24 slot mẫu (đã fetch)
+        // 'bookedSlotIds' là Set các ID đã đặt (đã fetch)
+
+        allTemplateSlots.forEach((slot) => {
+          const isSelected = selectedTimeSlots.includes(slot.id);
+          const isBooked = bookedSlotIds.has(slot.id);
+          const isUnavailable = slot.status === "ko tiếp khách";
+
+          const price = slot.pricing;
+          const startTimeDisplay = slot.time_start.substring(0, 5);
+
+          const button = document.createElement("button");
+          button.type = "button";
+          button.disabled = isBooked || isUnavailable;
+          button.dataset.slotId = slot.id;
+
+          let classes = "p-3 rounded-lg border text-center transition-all ";
+          if (isBooked) {
+            classes +=
+              "bg-red-300 border-red-400 text-gray-500 line-through cursor-not-allowed";
+          } else if (isUnavailable) {
+            classes +=
+              "bg-gray-300 border-gray-400 text-gray-500 line-through cursor-not-allowed";
+          } else if (isSelected) {
+            classes +=
+              "bg-blue-500 border-blue-600 text-white font-semibold ring-2 ring-blue-400";
+          } else {
+            if (slot.status === "giờ vàng") {
+              classes +=
+                "bg-yellow-50 border-yellow-300 hover:bg-yellow-100 hover:border-yellow-400";
+            } else {
+              // 'giờ thường'
+              classes +=
+                "bg-gray-50 border-gray-200 hover:bg-blue-50 hover:border-blue-400";
+            }
+          }
+          button.className = classes;
+
+          button.innerHTML = `
+                <div class="font-semibold">${startTimeDisplay}</div>
+                <div class="text-xs mt-1">${price.toLocaleString(
+                  "vi-VN"
+                )}đ</div>
+            `;
+
+          if (isBooked) {
+            button.innerHTML += `<div class="text-xs mt-1 text-red-700 font-bold">Đã đặt</div>`;
+          } else if (isUnavailable) {
+            button.innerHTML += `<div class="text-xs mt-1 text-gray-700 font-bold">Không phục vụ</div>`;
+          }
+
+          if (!isBooked && !isUnavailable) {
+            button.addEventListener("click", () =>
+              handleTimeSlotClick(slot.id)
+            );
+          }
+
+          timeSlotContainer.appendChild(button);
+        });
+      }
+
+      function renderConfirmation() {
+        const { total, error } = calculateTotal();
+        document.getElementById("totalPrice").value = total;
+        if (selectedTimeSlots.length > 0) {
+          const courtName = selectedCourtNameEl.textContent;
+          const dateString = new Date(selectedDate).toLocaleDateString("vi-VN");
+
+          const timeString = selectedTimeSlots
+            .map((id) => {
+              const slot = allTemplateSlots.find((s) => s.id === id);
+              return slot ? slot.time_start.substring(0, 5) : "?";
+            })
+            .join(", ");
+
+          confirmationDetailsEl.innerHTML = `
+                <p class="text-gray-600">Sân: <span class="font-semibold">${courtName}</span></p>
+                <p class="text-gray-600">Ngày: <span class="font-semibold">${dateString}</span></p>
+                <p class="text-gray-600">Giờ: <span class="font-semibold">${timeString}</span></p>
+            `;
+        } else {
+          confirmationDetailsEl.innerHTML = `<p class="text-gray-500">Vui lòng chọn khung giờ để xem tổng tiền.</p>`;
+        }
+
+        totalPriceDisplayEl.innerHTML = `Tổng cộng: <span class="text-blue-600">${total.toLocaleString(
+          "vi-VN"
+        )} VNĐ</span>`;
+
+        if (error) {
+          errorDisplayEl.textContent = error;
+          submitButton.disabled = true;
+        } else {
+          errorDisplayEl.textContent = "";
+          submitButton.disabled = selectedTimeSlots.length === 0;
+        }
+        hiddenTimeSlotsInput.value = selectedTimeSlots.join(",");
+      }
+
+      // --- EVENT HANDLERS (ĐÃ CẬP NHẬT) ---
+
+      function handleTimeSlotClick(slotId) {
+        if (selectedTimeSlots.includes(slotId)) {
+          selectedTimeSlots = selectedTimeSlots.filter((id) => id !== slotId);
+        } else {
+          selectedTimeSlots.push(slotId);
+          selectedTimeSlots.sort((a, b) => a - b);
+        }
+        renderTimeSlots(); // Chỉ render lại nút
+        renderConfirmation(); // Cập nhật tổng tiền
+      }
+
+      dateInput.addEventListener("change", (e) => {
+        selectedDate = e.target.value;
+        selectedTimeSlots = []; // Reset khi đổi ngày
+
+        fetchBookedSlots(); // Tải dữ liệu mới
+
+        renderConfirmation(); // Cập nhật tổng tiền (về 0)
+      });
+
+      courtListContainer.addEventListener("click", (e) => {
+        const button = e.target.closest(".court-button");
+        // Thêm !isLoading để ngăn đổi sân khi đang tải
+        if (button && !button.disabled && !isLoading) {
+          const newCourtId = button.dataset.courtId;
+          const newCourtName = button.dataset.courtName;
+
+          selectedCourtId = newCourtId;
+          courtIdInput.value = newCourtId;
+          selectedCourtNameEl.textContent = newCourtName;
+          selectedTimeSlots = [];
+
+          // Cập nhật UI nút
+          document.querySelectorAll(".court-button").forEach((btn) => {
+            btn.classList.remove(
+              "border-blue-500",
+              "bg-blue-50",
+              "ring-2",
+              "ring-blue-300"
+            );
+            btn.classList.add("border-gray-200", "hover:border-blue-400");
+          });
+          button.classList.add(
+            "border-blue-500",
+            "bg-blue-50",
+            "ring-2",
+            "ring-blue-300"
+          );
+
+          fetchBookedSlots(); // Tải dữ liệu mới
+
+          renderConfirmation(); // Cập nhật tổng tiền (về 0)
+        }
+      });
+
+      bookingForm.addEventListener("submit", (e) => {
+        const isAuthenticated = /*[[${isAuthenticated}]]*/ false;
+        if (!isAuthenticated) {
+          e.preventDefault();
+          alert("Vui lòng đăng nhập để đặt sân!");
+          window.location.href = "/login";
+        }
+      });
+
+      // --- INITIAL RENDER ---
+      async function initializePage() {
+        // 1. Tải 24 slot mẫu (chỉ 1 lần)
+        await fetchTemplateSlots();
+
+        // 2. Tải lịch đặt cho ngày/sân mặc định
+        await fetchBookedSlots(); // Hàm này sẽ tự gọi renderTimeSlots()
+
+        // 3. Cập nhật xác nhận
+        renderConfirmation();
+      }
+
+      // Chạy hàm khởi tạo
+      initializePage();
+
+      /*]]>*/
+    </script>
+    <script>
+      lucide.createIcons();
+    </script>
+  </body>
+</html>
