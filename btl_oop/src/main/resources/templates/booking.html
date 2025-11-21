@@ -35,83 +35,37 @@
         <div class="flex items-center justify-between h-16">
           <div class="flex-shrink-0">
             <a th:href="@{/}" class="flex items-center space-x-2">
-              <img
-                class="h-8 w-auto"
-                src="https://img.icons8.com/color/48/badminton-2.png"
-                alt="Logo Sân cầu lông"
-              />
-              <span class="text-xl font-bold text-gray-800"
-                >Badminton Court</span
-              >
+              <img class="h-8 w-auto" src="https://img.icons8.com/color/48/badminton-2.png" alt="Logo Sân cầu lông" />
+              <span class="text-xl font-bold text-gray-800">Badminton Court</span>
             </a>
           </div>
 
           <div class="hidden md:flex md:items-center md:space-x-4">
-            <a
-              th:href="@{/}"
-              class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-              >Trang chủ</a
-            >
-            <a
-              th:href="@{/booking}"
-              class="text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-              >Đặt sân</a
-            >
-            <a
-              th:href="@{/contact}"
-              class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-              >Liên hệ</a
-            >
+            <a th:href="@{/}" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Trang chủ</a>
+            <a th:href="@{/booking}" class="text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Đặt sân</a>
+            <a th:href="@{/contact}" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Liên hệ</a>
 
             <div th:if="${isAuthenticated}">
               <div class="relative group">
-                <button
-                  class="flex items-center text-gray-600 hover:text-blue-600 px-3 py-2"
-                >
-                  Chào, <span th:text="${currentUser}">User</span>
+                <button class="flex items-center text-gray-600 hover:text-blue-600 px-3 py-2">
+                  Chào,
+                  <span th:text="${currentUser}">User</span>
                   <i data-lucide="chevron-down" class="w-4 h-4 ml-1"></i>
                 </button>
                 <div
                   class="opacity-0 group-hover:opacity-100 invisible group-hover:visible absolute right-0 mt-0 w-48 bg-white rounded-md shadow-lg py-1 z-50 transition-all duration-200"
                 >
-                  <a
-                    th:if="${role == 'admin'}"
-                    th:href="@{/admin}"
-                    class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    >Trang Quản Trị</a
-                  >
-                  <a
-                    href="/profile"
-                    class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    >Thông tin cá nhân</a
-                  >
-                  <a
-                    href="/history"
-                    class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    >Lịch sử đặt sân</a
-                  >
-                  <a
-                    th:href="@{/logout}"
-                    class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    >Đăng xuất</a
-                  >
+                  <a th:if="${role == 'admin'}" th:href="@{/admin}" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Trang Quản Trị</a>
+                  <a href="/profile" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Thông tin cá nhân</a>
+                  <a href="/history" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Lịch sử đặt sân</a>
+                  <a th:href="@{/logout}" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Đăng xuất</a>
                 </div>
               </div>
             </div>
 
             <div th:unless="${isAuthenticated}">
-              <a
-                th:href="@{/login}"
-                class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-              >
-                Đăng nhập
-              </a>
-              <a
-                th:href="@{/register}"
-                class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors"
-              >
-                Đăng ký
-              </a>
+              <a th:href="@{/login}" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Đăng nhập</a>
+              <a th:href="@{/register}" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors">Đăng ký</a>
             </div>
           </div>
         </div>
@@ -119,19 +73,13 @@
     </nav>
     <main class="flex-1">
       <form th:action="@{/booking}" method="post" id="bookingForm">
-        <div
-          class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 animate-fade-in"
-        >
-          <h1 class="text-4xl font-bold text-gray-800 mb-10 text-center">
-            Đặt Sân Cầu Lông
-          </h1>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 animate-fade-in">
+          <h1 class="text-4xl font-bold text-gray-800 mb-10 text-center">Đặt Sân Cầu Lông</h1>
 
           <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
             <div class="lg:col-span-1 space-y-6">
               <div class="bg-white p-6 rounded-lg shadow-lg">
-                <h3 class="text-xl font-semibold mb-4 text-gray-700">
-                  1. Chọn ngày
-                </h3>
+                <h3 class="text-xl font-semibold mb-4 text-gray-700">1. Chọn ngày</h3>
                 <input
                   type="date"
                   id="selectedDate"
@@ -143,20 +91,10 @@
               </div>
 
               <div class="bg-white p-6 rounded-lg shadow-lg">
-                <h3 class="text-xl font-semibold mb-4 text-gray-700">
-                  2. Chọn sân
-                </h3>
-                <input
-                  type="hidden"
-                  id="selectedCourtId"
-                  name="selectedCourtId"
-                  th:value="${courts[0].id}"
-                />
+                <h3 class="text-xl font-semibold mb-4 text-gray-700">2. Chọn sân</h3>
+                <input type="hidden" id="selectedCourtId" name="selectedCourtId" th:value="${courts[0].id}" />
 
-                <div
-                  class="space-y-3 max-h-96 overflow-y-auto pr-2"
-                  id="courtList"
-                >
+                <div class="space-y-3 max-h-96 overflow-y-auto pr-2" id="courtList">
                   <button
                     type="button"
                     th:each="court, iter : ${courts}"
@@ -167,22 +105,10 @@
                     class="court-button w-full text-left p-4 rounded-lg border-2 transition-all"
                   >
                     <div class="flex justify-between items-center">
-                      <span class="font-semibold" th:text="${court.name}"
-                        >Sân 1</span
-                      >
-                      <span
-                        th:if="${court.status == 'maintenance'}"
-                        class="text-xs font-medium text-red-600"
-                      >
-                        Bảo trì
-                      </span>
+                      <span class="font-semibold" th:text="${court.name}">Sân 1</span>
+                      <span th:if="${court.status == 'maintenance'}" class="text-xs font-medium text-red-600">Bảo trì</span>
                     </div>
-                    <p
-                      class="text-sm text-gray-500 mt-1"
-                      th:text="${court.description}"
-                    >
-                      Mô tả
-                    </p>
+                    <p class="text-sm text-gray-500 mt-1" th:text="${court.description}">Mô tả</p>
                   </button>
                 </div>
               </div>
@@ -191,46 +117,27 @@
             <div class="lg:col-span-2 bg-white p-8 rounded-lg shadow-lg">
               <h3 class="text-xl font-semibold mb-4 text-gray-700">
                 3. Chọn giờ (Sân:
-                <span id="selectedCourtName" th:text="${courts[0].name}"></span
-                >)
+                <span id="selectedCourtName" th:text="${courts[0].name}"></span>
+                )
               </h3>
               <div class="mb-4 flex flex-wrap gap-4 text-sm"></div>
 
-              <input
-                type="hidden"
-                id="selectedTimeSlots"
-                name="selectedTimeSlots"
-                value=""
-              />
+              <input type="hidden" id="selectedTimeSlots" name="selectedTimeSlots" value="" />
 
-              <div
-                class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3"
-                id="timeSlotContainer"
-              >
+              <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3" id="timeSlotContainer">
                 <p class="col-span-full text-gray-500">Đang tải lịch sân...</p>
               </div>
 
               <div class="mt-8 border-t pt-6">
-                <h3 class="text-xl font-semibold mb-4 text-gray-700">
-                  4. Xác nhận
-                </h3>
+                <h3 class="text-xl font-semibold mb-4 text-gray-700">4. Xác nhận</h3>
                 <div class="bg-gray-50 p-6 rounded-lg">
                   <div id="confirmationDetails">
-                    <p class="text-gray-500">
-                      Vui lòng chọn khung giờ để xem tổng tiền.
-                    </p>
+                    <p class="text-gray-500">Vui lòng chọn khung giờ để xem tổng tiền.</p>
                   </div>
-                  <input
-                    type="hidden"
-                    id="totalPrice"
-                    name="totalPrice"
-                    value="0"
-                  />
-                  <p
-                    id="totalPriceDisplay"
-                    class="text-2xl font-bold text-gray-800 mt-4"
-                  >
-                    Tổng cộng: <span class="text-blue-600">0 VNĐ</span>
+                  <input type="hidden" id="totalPrice" name="totalPrice" value="0" />
+                  <p id="totalPriceDisplay" class="text-2xl font-bold text-gray-800 mt-4">
+                    Tổng cộng:
+                    <span class="text-blue-600">0 VNĐ</span>
                   </p>
                   <p id="errorDisplay" class="text-red-500 mt-2"></p>
 
@@ -270,9 +177,7 @@
       const courtListContainer = document.getElementById("courtList");
       const timeSlotContainer = document.getElementById("timeSlotContainer");
       const selectedCourtNameEl = document.getElementById("selectedCourtName");
-      const confirmationDetailsEl = document.getElementById(
-        "confirmationDetails"
-      );
+      const confirmationDetailsEl = document.getElementById("confirmationDetails");
       const totalPriceDisplayEl = document.getElementById("totalPriceDisplay");
       const errorDisplayEl = document.getElementById("errorDisplay");
       const submitButton = document.getElementById("submitBooking");
@@ -311,9 +216,7 @@
           const date = selectedDate;
           const courtId = selectedCourtId;
 
-          const response = await fetch(
-            `/getdata/slots/booked?date=${date}&courtId=${courtId}`
-          );
+          const response = await fetch(`/getdata/slots/booked?date=${date}&courtId=${courtId}`);
           if (!response.ok) {
             throw new Error("Lỗi khi tải lịch đặt sân.");
           }
@@ -377,7 +280,6 @@
           const isSelected = selectedTimeSlots.includes(slot.id);
           const isBooked = bookedSlotIds.has(slot.id);
           const isUnavailable = slot.status === "ko tiếp khách";
-
           const price = slot.pricing;
           const startTimeDisplay = slot.time_start.substring(0, 5);
 
@@ -388,43 +290,28 @@
 
           let classes = "p-3 rounded-lg border text-center transition-all ";
           if (isBooked) {
-            classes +=
-              "bg-red-300 border-red-400 text-gray-500 line-through cursor-not-allowed";
+            classes += "bg-red-300 border-red-400 text-gray-500 line-through cursor-not-allowed";
           } else if (isUnavailable) {
-            classes +=
-              "bg-gray-300 border-gray-400 text-gray-500 line-through cursor-not-allowed";
+            classes += "bg-gray-300 border-gray-400 text-gray-500 line-through cursor-not-allowed";
           } else if (isSelected) {
-            classes +=
-              "bg-blue-500 border-blue-600 text-white font-semibold ring-2 ring-blue-400";
+            classes += "bg-blue-500 border-blue-600 text-white font-semibold ring-2 ring-blue-400";
           } else {
             if (slot.status === "giờ vàng") {
-              classes +=
-                "bg-yellow-50 border-yellow-300 hover:bg-yellow-100 hover:border-yellow-400";
+              classes += "bg-yellow-50 border-yellow-300 hover:bg-yellow-100 hover:border-yellow-400";
             } else {
               // 'giờ thường'
-              classes +=
-                "bg-gray-50 border-gray-200 hover:bg-blue-50 hover:border-blue-400";
+              classes += "bg-gray-50 border-gray-200 hover:bg-blue-50 hover:border-blue-400";
             }
           }
           button.className = classes;
 
           button.innerHTML = `
                 <div class="font-semibold">${startTimeDisplay}</div>
-                <div class="text-xs mt-1">${price.toLocaleString(
-                  "vi-VN"
-                )}đ</div>
+                <div class="text-xs mt-1">${price.toLocaleString("vi-VN")}đ</div>
             `;
 
-          if (isBooked) {
-            button.innerHTML += `<div class="text-xs mt-1 text-red-700 font-bold">Đã đặt</div>`;
-          } else if (isUnavailable) {
-            button.innerHTML += `<div class="text-xs mt-1 text-gray-700 font-bold">Không phục vụ</div>`;
-          }
-
           if (!isBooked && !isUnavailable) {
-            button.addEventListener("click", () =>
-              handleTimeSlotClick(slot.id)
-            );
+            button.addEventListener("click", () => handleTimeSlotClick(slot.id));
           }
 
           timeSlotContainer.appendChild(button);
@@ -454,9 +341,7 @@
           confirmationDetailsEl.innerHTML = `<p class="text-gray-500">Vui lòng chọn khung giờ để xem tổng tiền.</p>`;
         }
 
-        totalPriceDisplayEl.innerHTML = `Tổng cộng: <span class="text-blue-600">${total.toLocaleString(
-          "vi-VN"
-        )} VNĐ</span>`;
+        totalPriceDisplayEl.innerHTML = `Tổng cộng: <span class="text-blue-600">${total.toLocaleString("vi-VN")} VNĐ</span>`;
 
         if (error) {
           errorDisplayEl.textContent = error;
@@ -504,20 +389,10 @@
 
           // Cập nhật UI nút
           document.querySelectorAll(".court-button").forEach((btn) => {
-            btn.classList.remove(
-              "border-blue-500",
-              "bg-blue-50",
-              "ring-2",
-              "ring-blue-300"
-            );
+            btn.classList.remove("border-blue-500", "bg-blue-50", "ring-2", "ring-blue-300");
             btn.classList.add("border-gray-200", "hover:border-blue-400");
           });
-          button.classList.add(
-            "border-blue-500",
-            "bg-blue-50",
-            "ring-2",
-            "ring-blue-300"
-          );
+          button.classList.add("border-blue-500", "bg-blue-50", "ring-2", "ring-blue-300");
 
           fetchBookedSlots(); // Tải dữ liệu mới
 

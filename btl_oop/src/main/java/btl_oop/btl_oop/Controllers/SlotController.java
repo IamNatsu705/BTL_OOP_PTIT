@@ -20,7 +20,7 @@ public class SlotController {
 
     // Tạo một record (hoặc class) đơn giản để chứa dữ liệu slot
     record Slot(long id, double pricing, String status, String time_start, String time_end) {}
-
+    
     /**
      * API 1: Lấy 24 slot mẫu (cấu hình, giá, trạng thái...)
      */

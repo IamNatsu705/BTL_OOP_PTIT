@@ -22,83 +22,37 @@
         <div class="flex items-center justify-between h-16">
           <div class="flex-shrink-0">
             <a th:href="@{/}" class="flex items-center space-x-2">
-              <img
-                class="h-8 w-auto"
-                src="https://img.icons8.com/color/48/badminton-2.png"
-                alt="Logo Sân cầu lông"
-              />
-              <span class="text-xl font-bold text-gray-800"
-                >Badminton Court</span
-              >
+              <img class="h-8 w-auto" src="https://img.icons8.com/color/48/badminton-2.png" alt="Logo Sân cầu lông" />
+              <span class="text-xl font-bold text-gray-800">Badminton Court</span>
             </a>
           </div>
 
           <div class="hidden md:flex md:items-center md:space-x-4">
-            <a
-              th:href="@{/}"
-              class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-              >Trang chủ</a
-            >
-            <a
-              th:href="@{/booking}"
-              class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-              >Đặt sân</a
-            >
-            <a
-              th:href="@{/contact}"
-              class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-              >Liên hệ</a
-            >
+            <a th:href="@{/}" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Trang chủ</a>
+            <a th:href="@{/booking}" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Đặt sân</a>
+            <a th:href="@{/contact}" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Liên hệ</a>
 
             <div th:if="${isAuthenticated}">
               <div class="relative group">
-                <button
-                  class="flex items-center text-gray-600 hover:text-blue-600 px-3 py-2"
-                >
-                  Chào, <span th:text="${currentUser}">User</span>
+                <button class="flex items-center text-gray-600 hover:text-blue-600 px-3 py-2">
+                  Chào,
+                  <span th:text="${currentUser}">User</span>
                   <i data-lucide="chevron-down" class="w-4 h-4 ml-1"></i>
                 </button>
                 <div
                   class="opacity-0 group-hover:opacity-100 invisible group-hover:visible absolute right-0 mt-0 w-48 bg-white rounded-md shadow-lg py-1 z-50 transition-all duration-200"
                 >
-                  <a
-                    th:if="${role == 'admin'}"
-                    th:href="@{/admin}"
-                    class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    >Trang Quản Trị</a
-                  >
-                  <a
-                    th:href="@{/profile}"
-                    class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    >Thông tin cá nhân</a
-                  >
-                  <a
-                    th:href="@{/history}"
-                    class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    >Lịch sử đặt sân</a
-                  >
-                  <a
-                    th:href="@{/logout}"
-                    class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    >Đăng xuất</a
-                  >
+                  <a th:if="${role == 'admin'}" th:href="@{/admin}" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Trang Quản Trị</a>
+                  <a th:href="@{/profile}" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Thông tin cá nhân</a>
+                  <a th:href="@{/history}" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Lịch sử đặt sân</a>
+                  <a th:href="@{/logout}" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Đăng xuất</a>
                 </div>
               </div>
             </div>
 
             <div th:unless="${isAuthenticated}">
-              <a
-                th:href="@{/login}"
-                class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-              >
-                Đăng nhập
-              </a>
-              <a
-                th:href="@{/register}"
-                class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors"
-              >
-                Đăng ký
-              </a>
+              <a th:href="@{/login}" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Đăng nhập</a>
+              <a th:href="@{/register}" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors">Đăng ký</a>
             </div>
           </div>
         </div>
@@ -109,31 +63,13 @@
       <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <h1 class="text-3xl font-bold text-gray-900 mb-8">Lịch sử đặt sân</h1>
 
-        <div
-          th:if="${bookings != null and !bookings.isEmpty()}"
-          class="space-y-6"
-        >
-          <div
-            th:each="booking : ${bookings}"
-            class="bg-white shadow-lg rounded-lg overflow-hidden transition-shadow hover:shadow-xl"
-          >
+        <div th:if="${bookings != null and !bookings.isEmpty()}" class="space-y-6">
+          <div th:each="booking : ${bookings}" class="bg-white shadow-lg rounded-lg overflow-hidden transition-shadow hover:shadow-xl">
             <div class="p-6">
-              <div
-                class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3"
-              >
+              <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3">
                 <div>
-                  <h3
-                    class="text-xl font-semibold text-gray-900"
-                    th:text="${booking.courtName}"
-                  >
-                    Sân 2 (Ngoài trời)
-                  </h3>
-                  <p
-                    class="text-sm text-gray-500"
-                    th:text="'Mã đặt sân: #' + ${booking.id}"
-                  >
-                    Mã đặt sân: #12345
-                  </p>
+                  <h3 class="text-xl font-semibold text-gray-900" th:text="${booking.courtName}">Sân 2 (Ngoài trời)</h3>
+                  <p class="text-sm text-gray-500" th:text="'Mã đặt sân: #' + ${booking.id}">Mã đặt sân: #12345</p>
                 </div>
 
                 <span
@@ -148,53 +84,26 @@
               <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
                 <div>
                   <span class="font-medium text-gray-500 block">Ngày</span>
-                  <span
-                    class="font-semibold text-gray-800"
-                    th:text="${booking.date}"
-                    >15-11-2025</span
-                  >
+                  <span class="font-semibold text-gray-800" th:text="${booking.date}">15-11-2025</span>
                 </div>
                 <div>
                   <span class="font-medium text-gray-500 block">Khung giờ</span>
-                  <span
-                    class="font-semibold text-gray-800"
-                    th:text="${booking.timeSlot}"
-                    >18:00 - 19:00</span
-                  >
+                  <span class="font-semibold text-gray-800" th:text="${booking.timeSlot}">18:00 - 19:00</span>
                 </div>
                 <div>
                   <span class="font-medium text-gray-500 block">Tổng tiền</span>
-                  <span
-                    class="font-semibold text-gray-800"
-                    th:text="${#numbers.formatDecimal(booking.price, 0, 'POINT', 0, 'COMMA') + ' VNĐ'}"
-                    >80,000 VNĐ</span
-                  >
+                  <span class="font-semibold text-gray-800" th:text="${#numbers.formatDecimal(booking.price, 0, 'POINT', 0, 'COMMA') + ' VNĐ'}">80,000 VNĐ</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <div
-          th:if="${bookings == null or bookings.isEmpty()}"
-          class="text-center bg-white p-12 rounded-lg shadow-md"
-        >
-          <i
-            data-lucide="calendar-x"
-            class="w-16 h-16 text-gray-400 mx-auto mb-4"
-          ></i>
-          <h2 class="text-xl font-semibold text-gray-700">
-            Chưa có lịch sử đặt sân
-          </h2>
-          <p class="text-gray-500 mt-2">
-            Bạn chưa thực hiện đặt sân nào. Hãy đặt sân ngay!
-          </p>
-          <a
-            th:href="@{/booking}"
-            class="mt-6 inline-block bg-blue-600 text-white px-6 py-2 rounded-lg text-md font-semibold hover:bg-blue-700 transition-colors"
-          >
-            Đặt Sân Ngay
-          </a>
+        <div th:if="${bookings == null or bookings.isEmpty()}" class="text-center bg-white p-12 rounded-lg shadow-md">
+          <i data-lucide="calendar-x" class="w-16 h-16 text-gray-400 mx-auto mb-4"></i>
+          <h2 class="text-xl font-semibold text-gray-700">Chưa có lịch sử đặt sân</h2>
+          <p class="text-gray-500 mt-2">Bạn chưa thực hiện đặt sân nào. Hãy đặt sân ngay!</p>
+          <a th:href="@{/booking}" class="mt-6 inline-block bg-blue-600 text-white px-6 py-2 rounded-lg text-md font-semibold hover:bg-blue-700 transition-colors">Đặt Sân Ngay</a>
         </div>
       </div>
     </main>
@@ -204,10 +113,7 @@
         <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             <h5 class="text-lg font-bold text-white mb-4">Về chúng tôi</h5>
-            <p class="text-sm">
-              Hệ thống sân cầu lông hiện đại, chất lượng cao, phục vụ đam mê thể
-              thao của bạn.
-            </p>
+            <p class="text-sm">Hệ thống sân cầu lông hiện đại, chất lượng cao, phục vụ đam mê thể thao của bạn.</p>
           </div>
           <div>
             <h5 class="text-lg font-bold text-white mb-4">Liên kết nhanh</h5>
@@ -224,11 +130,12 @@
             <h5 class="text-lg font-bold text-white mb-4">Liên hệ</h5>
             <ul class="space-y-2 text-sm">
               <li class="flex items-center">
-                <i data-lucide="map-pin" class="w-4 h-4 mr-2"></i> 123 Đường
-                ABC, Quận 1, TP. HCM
+                <i data-lucide="map-pin" class="w-4 h-4 mr-2"></i>
+                123 Đường ABC, Quận 1, TP. HCM
               </li>
               <li class="flex items-center">
-                <i data-lucide="phone" class="w-4 h-4 mr-2"></i> (028) 3812 3456
+                <i data-lucide="phone" class="w-4 h-4 mr-2"></i>
+                (028) 3812 3456
               </li>
               <li class="flex items-center">
                 <i data-lucide="mail" class="w-4 h-4 mr-2"></i>
@@ -237,9 +144,7 @@
             </ul>
           </div>
           <div>
-            <h5 class="text-lg font-bold text-white mb-4">
-              Theo dõi chúng tôi
-            </h5>
+            <h5 class="text-lg font-bold text-white mb-4">Theo dõi chúng tôi</h5>
             <div class="flex space-x-4"></div>
           </div>
         </div>
