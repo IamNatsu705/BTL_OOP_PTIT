@@ -13,7 +13,7 @@ public class GlobalControllerAdvice {
         
         // Đây chính là khối code lặp đi lặp lại
         Object isAuthenticated = session.getAttribute("isAuthenticated");
-
+        
         if (isAuthenticated != null) {
             model.addAttribute("isAuthenticated", isAuthenticated);
             model.addAttribute("currentUser", session.getAttribute("currentUser"));

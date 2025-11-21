@@ -8,7 +8,10 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import btl_oop.btl_oop.Models.Court;
+import btl_oop.btl_oop.Services.ViewService;
 // import org.springframework.web.bind.annotation.RequestParam;
+import lombok.RequiredArgsConstructor;
 
 // import jakarta.servlet.http.HttpSession;
 
@@ -17,9 +20,9 @@ import java.util.stream.Collectors;
 // 1. DATA MODELS (Records)
 // =================================================================================
 record User(int id, String username, String password, String fullName, String email, String phone, String role) {}
-record Court(int id, String name, String status, String description) {}
+// record Court(int id, String name, String status, String description) {}
 record TimeSlot(int id, String slot_name, String start_time, String end_time, double price_per_hour, String days_apply) {}
-record Booking(int id, int userId, int courtId, String startTime, String endTime, double totalPrice, String status) {}
+// record Booking(int id, int userId, int courtId, String startTime, String endTime, double totalPrice, String status) {}
 record Comment(int id, int bookingId, int userId, String userFullName, int rating, String comment_text, String created_at) {}
 // DTO rỗng để binding form đăng ký
 record UserDto(String fullName, String username, String email, String phone, String password) {}
@@ -34,14 +37,14 @@ class MockData {
             new User(3, "vantrang", "123", "Trần Thị B", "vantrang@gmail.com", "0912345678", "customer")
     );
 
-    private static final List<Court> courts = List.of(
-            new Court(1, "Sân 1 (Sàn gỗ)", "available", "Sân tiêu chuẩn thi đấu, sàn gỗ nhập khẩu."),
-            new Court(2, "Sân 2 (Sàn thảm)", "available", "Sân thảm đỏ, êm ái, giảm chấn thương."),
-            new Court(3, "Sân 3 (Sàn thảm)", "maintenance", "Sân đang bảo trì, vui lòng quay lại sau."),
-            new Court(4, "Sân 4 (VIP)", "available", "Sân VIP, ánh sáng tốt nhất, có khu chờ riêng."),
-            new Court(5, "Sân 5 (Ngoài trời)", "available", "Sân ngoài trời, trải nghiệm không khí thoáng đãng."),
-            new Court(6, "Sân 6 (Sàn thảm)", "available", "Sân thảm xanh, mới đưa vào hoạt động.")
-    );
+    // private static final List<Court> courts = List.of(
+    //         new Court(1, "Sân 1 (Sàn gỗ)", "available", "Sân tiêu chuẩn thi đấu, sàn gỗ nhập khẩu."),
+    //         new Court(2, "Sân 2 (Sàn thảm)", "available", "Sân thảm đỏ, êm ái, giảm chấn thương."),
+    //         new Court(3, "Sân 3 (Sàn thảm)", "maintenance", "Sân đang bảo trì, vui lòng quay lại sau."),
+    //         new Court(4, "Sân 4 (VIP)", "available", "Sân VIP, ánh sáng tốt nhất, có khu chờ riêng."),
+    //         new Court(5, "Sân 5 (Ngoài trời)", "available", "Sân ngoài trời, trải nghiệm không khí thoáng đãng."),
+    //         new Court(6, "Sân 6 (Sàn thảm)", "available", "Sân thảm xanh, mới đưa vào hoạt động.")
+    // );
 
     private static final List<TimeSlot> timeSlots = List.of(
             new TimeSlot(1, "Giờ thấp điểm (Sáng T2-T6)", "05:00:00", "16:00:00", 100000, "weekday_morning"),
@@ -49,11 +52,11 @@ class MockData {
             new TimeSlot(3, "Cuối tuần (T7-CN)", "05:00:00", "23:00:00", 180000, "weekend")
     );
 
-    private static final List<Booking> bookings = List.of(
-            new Booking(1, 2, 1, "2025-11-10T17:00:00", "2025-11-10T18:00:00", 150000, "completed"),
-            new Booking(2, 3, 4, "2025-11-10T18:00:00", "2025-11-10T20:00:00", 300000, "confirmed"),
-            new Booking(3, 2, 2, "2025-11-11T08:00:00", "2025-11-11T09:00:00", 100000, "confirmed")
-    );
+    // private static final List<Booking> bookings = List.of(
+    //         new Booking(1, 2, 1, "2025-11-10T17:00:00", "2025-11-10T18:00:00", 150000, "completed"),
+    //         new Booking(2, 2, 4, "2025-11-10T18:00:00", "2025-11-10T20:00:00", 300000, "confirmed"),
+    //         new Booking(3, 2, 2, "2025-11-11T08:00:00", "2025-11-11T09:00:00", 100000, "confirmed")
+    // );
 
     private static final List<Comment> comments = List.of(
             new Comment(1, 1, 2, "Nguyễn Văn A", 5, "Sân 1 sàn gỗ chơi rất thích, ánh sáng tốt. Sẽ quay lại!", "2025-11-10T18:30:00"),
@@ -75,9 +78,9 @@ class MockData {
     public static List<User> getUsers() { return users; }
     public static User getAdminUser() { return users.stream().filter(u -> u.role().equals("admin")).findFirst().orElse(null); }
     public static List<User> getCustomers() { return users.stream().filter(u -> u.role().equals("customer")).collect(Collectors.toList()); }
-    public static List<Court> getCourts() { return courts; }
+    // public static List<Court> getCourts() { return courts; }
     public static List<TimeSlot> getTimeSlots() { return timeSlots; }
-    public static List<Booking> getBookings() { return bookings; }
+    // public static List<Booking> getBookings() { return bookings; }
     public static List<Comment> getComments() { return comments; }
     public static List<Map<String, Object>> getRevenueData() { return revenueData; }
 }
@@ -88,13 +91,15 @@ class MockData {
 // (Xử lý request và trả về file HTML với dữ liệu)
 // =================================================================================
 @Controller
+@RequiredArgsConstructor
 public class ViewController {
+    private final ViewService viewService;
 
     // --- TRANG CHÍNH ---
 
     @GetMapping("/")
     public String home(Model model) {
-        model.addAttribute("courts", MockData.getCourts().stream().limit(3).collect(Collectors.toList()));
+        model.addAttribute("courts", viewService.getAllCourts().stream().collect(Collectors.toList()));
         return "home";
     }
 
@@ -107,38 +112,14 @@ public class ViewController {
 
     @GetMapping("/booking")
     public String bookingPage(Model model) {
+        List<Court> allCourts = viewService.getAllCourts();
+        model.addAttribute("courts", allCourts);
 
-        // --- Dữ liệu giả cho danh sách sân ---
-        var court1 = Map.of(
-                "id", 1L,
-                "name", "Sân 1 (Thảm dày)",
-                "description", "Sân tiêu chuẩn thi đấu",
-                "status", "available"
-        );
-        var court2 = Map.of(
-                "id", 2L,
-                "name", "Sân 2 (Ngoài trời)",
-                "description", "View đẹp, thoáng mát",
-                "status", "available"
-        );
-        var court3 = Map.of(
-                "id", 3L,
-                "name", "Sân 3 (Bảo trì)",
-                "description", "Đang sửa chữa",
-                "status", "maintenance"
-        );
-        model.addAttribute("courts", List.of(court1, court2, court3));
-
-        // Gửi ngày hôm nay để làm giá trị mặc định
         model.addAttribute("selectedDate", LocalDate.now().toString());
-
-        // KHÔNG CẦN gửi "allTemplateSlots" hoặc "allBookedSlots"
         
-        return "booking"; // Tên của file booking.html
+        return "booking";
     }
-    
     // --- TRANG ADMIN ---
-
     @GetMapping("/admin")
     public String adminOverview(Model model) {
         model.addAttribute("monthlyRevenue", 125000000);
@@ -150,7 +131,7 @@ public class ViewController {
 
     @GetMapping("/admin/courts")
     public String adminCourts(Model model) {
-        model.addAttribute("courts", MockData.getCourts());
+        model.addAttribute("courts", viewService.getAllCourts());
         return "admin-courts"; // Trả về file admin-courts.html
     }
 

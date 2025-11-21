@@ -3,7 +3,6 @@ package btl_oop.btl_oop.Controllers;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-// import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,10 +13,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import btl_oop.btl_oop.Services.*;
+import lombok.RequiredArgsConstructor;
+
+
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/getdata/slots")
 public class SlotController {
-
+    private final SlotService slotService;
     // Tạo một record (hoặc class) đơn giản để chứa dữ liệu slot
     record Slot(long id, double pricing, String status, String time_start, String time_end) {}
 
@@ -50,36 +54,16 @@ public class SlotController {
 
             templateSlots.add(new Slot(id, price, status, timeStart, timeEnd));
         }
-        
         return ResponseEntity.ok(templateSlots);
     }
 
-    /**
-     * API 2: Lấy các slot ĐÃ ĐẶT theo ngày và sân
-     */
+    // API 2: Lấy các slot ĐÃ ĐẶT theo ngày và sân
     @GetMapping("/booked")
     public ResponseEntity<Set<Long>> getBookedSlotIds(
             @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
             @RequestParam("courtId") Long courtId) {
-        
-        // --- Logic dữ liệu giả ---
-        // Backend sẽ truy vấn DB dựa trên date và courtId
-        // Ở đây, chúng ta trả về dữ liệu giả
-        
-        Set<Long> bookedIds;
-
-        if (courtId == 1) {
-            // Sân 1 có slot 17, 18, 19 (tức 16:00, 17:00, 18:00) đã đặt
-            bookedIds = Set.of(17L, 18L, 19L); 
-        } else if (courtId == 2) {
-             // Sân 2 có slot 8, 9, 10 (tức 07:00, 08:00, 09:00) đã đặt
-            bookedIds = Set.of(8L, 9L, 10L);
-        } else {
-            bookedIds = Set.of(); // Sân khác rỗng
-        }
-
-        // Chỉ trả về 1 Set các ID: [17, 18, 19]
+             
+        Set<Long> bookedIds = slotService.getBookedsByCourtAndDate(courtId, date);
         return ResponseEntity.ok(bookedIds);
     }
-   
 }

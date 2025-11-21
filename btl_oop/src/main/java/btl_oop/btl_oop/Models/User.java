@@ -39,5 +39,8 @@ public class User {
     // Một User có thể có nhiều lượt đặt (SlotBooked)
     // 'mappedBy = "user"' trỏ đến tên trường 'user' trong class SlotBooked
     @OneToMany(mappedBy = "user")
-    private Set<SlotBooked> bookings;
+    private Set<SlotBooked> slotBookeds;
+
+    @OneToMany(mappedBy = "user")
+    private Set<Booking> bookings;
 }
