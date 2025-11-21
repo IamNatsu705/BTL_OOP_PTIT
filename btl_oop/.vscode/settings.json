@@ -1,0 +1,17 @@
+{
+  "files.associations": {
+    "*.html": "html"
+  },
+  "tailwindCSS.includeLanguages": {
+    "thymeleaf": "html",
+    "html": "html"
+  },
+  "editor.quickSuggestions": {
+    "other": true,
+    "comments": false,
+    "strings": true
+  },
+  "css.validate": false,
+  "editor.inlineSuggest.enabled": true,
+  "java.compile.nullAnalysis.mode": "automatic"
+}
