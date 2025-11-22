@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-BtlOopApplication<btl_oop>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "btl_oop.btl_oop.BtlOopApplication",
+            "projectName": "btl_oop",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
