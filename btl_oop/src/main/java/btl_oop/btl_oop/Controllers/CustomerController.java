@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import btl_oop.btl_oop.Models.Booking;
 import btl_oop.btl_oop.Services.CustomerService;
@@ -44,23 +45,14 @@ public class CustomerController {
         model.addAttribute("user", userProfile);
         return "user_profile";
     }
-
+    // API đặt sân
+    record BookingSlot(int courtId,int slotId,Long price){};
+    record BookingRequest(LocalDate bookingDate,Long totalAmount,List<BookingSlot> selectedSlots) {}
     @PostMapping("/booking")
     public String createBooking(
-            @RequestParam("selectedCourtId") Long courtId,
-            @RequestParam("selectedDate") String selectedDateStr,
-            @RequestParam("selectedTimeSlots") String selectedTimeSlots,
-            @RequestParam("totalPrice") double totalPrice,
-            HttpSession session) {
-        Object userName = session.getAttribute("currentUser");
-        Long idUser = customerService.getIdUser(String.valueOf(userName));
-        List<Long> bookedSlots = new ArrayList<>(List.of(selectedTimeSlots.split(","))).stream().map(a -> Long.valueOf(a)).collect(Collectors.toList());
-        LocalDate date = LocalDate.parse(selectedDateStr);
-        for(Long slot: bookedSlots){
-            viewService.saveBookSlot(idUser, courtId, slot, date);
-        }
-        
-        customerService.saveBooking(idUser, courtId, date, BigDecimal.valueOf(totalPrice), selectedTimeSlots);
+        @RequestBody BookingRequest request,
+        RedirectAttributes redirectAttributes
+    ) {
         return "redirect:/booking";
     }
 }

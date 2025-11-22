@@ -19,7 +19,7 @@ public class AdminController {
 
     @GetMapping("/admin/courts")
     public String adminCourts(Model model) {
-        model.addAttribute("courts", MockData.getCourts());
+        // model.addAttribute("courts", MockData.getCourts());
         return "admin-courts"; // Trả về file admin-courts.html
     }
 

@@ -58,12 +58,59 @@ public class SlotController {
     }
 
     // API 2: Lấy các slot ĐÃ ĐẶT theo ngày và sân
+    record slotBooked(int slotBooked_id,int court_id,int slot_id,LocalDate dateBooked){}
     @GetMapping("/booked")
-    public ResponseEntity<Set<Long>> getBookedSlotIds(
-            @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
-            @RequestParam("courtId") Long courtId) {
-             
-        Set<Long> bookedIds = slotService.getBookedsByCourtAndDate(courtId, date);
-        return ResponseEntity.ok(bookedIds);
+    public ResponseEntity<List<slotBooked>> getBookedSlotIds(
+            @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        
+        System.out.println("API /booked được gọi với ngày: " + date);
+
+        // --- TẠO DỮ LIỆU GIẢ ---
+        List<slotBooked> mockBookings = List.of(
+            // Sân 1, Slot 8 (08:00)
+            new slotBooked(101, 1, 8, date),
+            
+            // Sân 3, Slot 15 (15:00)
+            new slotBooked(102, 3, 15, date),
+            
+            // Sân 3, Slot 16 (16:00) (Giờ liên tục để test)
+            new slotBooked(103, 3, 16, date),
+
+            // Sân 6, Slot 20 (20:00) - Sân cuối cùng
+            new slotBooked(104, 6, 20, date)
+        );
+        
+        // Trả về dữ liệu giả
+        return ResponseEntity.ok(mockBookings);
+    }
+    //API 3: Lấy giá của từng slot , từng sân theo ngày
+    record priceSlot(int court_id,int slot_id,Long price,LocalDate dateBooked){};
+    @GetMapping("/price")
+    public ResponseEntity<List<priceSlot>> getPriceSlots( @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date){
+        List<priceSlot> priceSlots = new ArrayList<>();
+        int numberOfCourts = 6;
+        int slotsPerDay = 24;
+
+        for (int courtId = 1; courtId <= numberOfCourts; courtId++) {
+            for (int slotId = 0; slotId < slotsPerDay; slotId++) {
+                Long price;
+                
+                // Thiết lập giá giả định theo giờ:
+                // 8h - 16h (slot 8-16): Giờ thấp điểm (50.000₫)
+                // 17h - 21h (slot 17-21): Giờ cao điểm (120.000₫)
+                // Các giờ còn lại: Giờ trung bình (80.000₫)
+                if (slotId >= 8 && slotId <= 16) {
+                    price = 50000L; // Giờ hành chính
+                } else if (slotId >= 17 && slotId <= 21) {
+                    price = 120000L; // Giờ cao điểm buổi tối
+                } else {
+                    price = 80000L; // Giờ đêm/sáng sớm
+                }
+
+                priceSlots.add(new priceSlot(courtId, slotId, price, date));
+            }
+        }
+
+        return ResponseEntity.ok(priceSlots);
     }
 }
