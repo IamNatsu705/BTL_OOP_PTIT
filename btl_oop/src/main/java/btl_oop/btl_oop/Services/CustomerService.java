@@ -7,33 +7,64 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
+import org.springframework.lang.NonNull; // Import đúng của Spring
 
 import btl_oop.btl_oop.Models.Booking;
 import btl_oop.btl_oop.Models.User;
 import btl_oop.btl_oop.Repositories.*;
-import jakarta.annotation.Nonnull;
+
 import lombok.RequiredArgsConstructor;
+
 @RequiredArgsConstructor
 @Service
 public class CustomerService {
     private final UserRepository userRepo;
     private final CourtRepository courtRepo;
     private final BookingRepository bookingRepo;
+
     public Long getIdUser(String userName){
-        long idUser = userRepo.findByUserName(userName).orElseThrow(() -> new RuntimeException("User không tồn tại")).getId();
-        return idUser;
+        // SỬA LỖI 1: Gọi đúng hàm getUserId() thay vì getId()
+        return userRepo.findByUserName(userName)
+                .orElseThrow(() -> new RuntimeException("User không tồn tại"))
+                .getUserId();
     }
+
     public Map<String, String> getUserProfile(String userName){
-        Long idUser = getIdUser(userName);
-        User user = userRepo.findById(idUser).get();
+        // Logic lấy ID user
+        User user = userRepo.findByUserName(userName)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        return Map.of("name", user.getUserName(), "phone", user.getPhone(), "email", "abc@gmail.com", "registerDate", String.valueOf(user.getCreatedAt().format(fmt)));
+        
+        // SỬA LỖI 3: Map.of không nhận null, phải check null trước
+        String safeName = user.getFullName() != null ? user.getFullName() : user.getUserName();
+        String safePhone = user.getPhone() != null ? user.getPhone() : "";
+        String safeEmail = user.getEmail() != null ? user.getEmail() : "";
+        String safeDate = user.getCreatedAt() != null ? user.getCreatedAt().format(fmt) : "N/A";
+
+        return Map.of(
+            "name", safeName,
+            "phone", safePhone,
+            "email", safeEmail,
+            "registerDate", safeDate
+        );
     }
-    public void saveBooking(Long userId, Long courtId, LocalDate date, BigDecimal price, String slotBooked){
-        User user = userRepo.findById(userId).get();
-        String courtName = courtRepo.findById(courtId).get().getName();
-        String bookedSlots[] = slotBooked.split(",");
-        String timeSlots = String.format("%02d:00 - %02d:00", Integer.parseInt(bookedSlots[0])-1, Integer.valueOf(bookedSlots[bookedSlots.length-1])); 
+
+    public void saveBooking(@NonNull Long userId,@NonNull Long courtId, LocalDate date, BigDecimal price, String slotBooked){
+        // Nên dùng orElseThrow thay vì .get() để tránh lỗi NoSuchElementException
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        String courtName = courtRepo.findById(courtId)
+                .orElseThrow(() -> new RuntimeException("Court not found"))
+                .getName();
+        
+        String[] bookedSlots = slotBooked.split(",");
+        
+        // Logic tính giờ
+        String timeSlots = String.format("%02d:00 - %02d:00", 
+                Integer.parseInt(bookedSlots[0]) - 1, 
+                Integer.valueOf(bookedSlots[bookedSlots.length - 1])); 
+        
         Booking booking = new Booking();
         booking.setCourtName(courtName);
         booking.setDate(date);
@@ -42,9 +73,11 @@ public class CustomerService {
         booking.setUser(user);
         bookingRepo.save(booking);
     }
-    public List<Booking> getHistoryById(@Nonnull Long userId){
-        User user = userRepo.findById(userId).get();
-        List<Booking> history = bookingRepo.findByUser(user);
-        return history;
+
+    // SỬA LỖI 2: Dùng @NonNull đúng với import
+    public List<Booking> getHistoryById(@NonNull Long userId){
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return bookingRepo.findByUser(user);
     }
 }

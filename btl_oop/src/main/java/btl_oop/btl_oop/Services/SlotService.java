@@ -1,10 +1,10 @@
 package btl_oop.btl_oop.Services;
 
-import btl_oop.btl_oop.Repo.TypeSlotRepo;
-import btl_oop.btl_oop.Repo.CourtRepo;
-import btl_oop.btl_oop.Repo.SlotBookedRepo;
-import btl_oop.btl_oop.Repo.SlotRepo;
-
+import btl_oop.btl_oop.Repositories.TypeSlotRepository;
+import org.springframework.lang.NonNull;
+import btl_oop.btl_oop.Repositories.SlotRepository;
+import btl_oop.btl_oop.Repositories.CourtRepository;
+import btl_oop.btl_oop.Repositories.SlotBookedRepository;
 import btl_oop.btl_oop.Models.Slot;
 import btl_oop.btl_oop.Models.TypeSlots;
 import btl_oop.btl_oop.Models.Court;
@@ -19,16 +19,16 @@ import java.util.Optional;
 @Service
 public class SlotService {
 
-    private final SlotRepo slotRepo;
-    private final TypeSlotRepo typeSlotRepo;
-    private final CourtRepo courtRepo;
-    private final SlotBookedRepo slotBookedRepo;
+    private final SlotRepository slotRepo;
+    private final TypeSlotRepository typeSlotRepo;
+    private final CourtRepository courtRepo;
+    private final SlotBookedRepository slotBookedRepo;
 
     public SlotService(
-            SlotRepo slotRepo,
-            TypeSlotRepo typeSlotRepo,
-            CourtRepo courtRepo,
-            SlotBookedRepo slotBookedRepo
+            SlotRepository slotRepo,
+            TypeSlotRepository typeSlotRepo,
+            CourtRepository courtRepo,
+            SlotBookedRepository slotBookedRepo
     ) {
         this.slotRepo = slotRepo;
         this.typeSlotRepo = typeSlotRepo;
@@ -41,22 +41,22 @@ public class SlotService {
         return slotRepo.findAll();
     }
 
-    public Optional<Slot> getSlotById(Long id) {
+    public Optional<Slot> getSlotById(@NonNull Long id) {
         return slotRepo.findById(id);
     }
 
-    public Slot saveSlot(Slot slot) {
+    public Slot saveSlot(@NonNull Slot slot) {
         return slotRepo.save(slot);
     }
 
-    public void deleteSlot(Long id) {
+    public void deleteSlot(@NonNull Long id) {
         if (!slotRepo.existsById(id))
             throw new IllegalArgumentException("Slot không tồn tại");
         slotRepo.deleteById(id);
     }
 
     // **Xóa nhiều slot**
-    public void deleteSlots(List<Long> ids) {
+    public void deleteSlots(@NonNull List<Long> ids) {
         List<Slot> slots = slotRepo.findAllById(ids);
         if (slots.size() != ids.size()) {
             throw new IllegalArgumentException("Một số slot không tồn tại");
@@ -69,7 +69,7 @@ public class SlotService {
         return typeSlotRepo.findAll();
     }
 
-    public TypeSlots saveTypeSlot(TypeSlots typeSlot) {
+    public TypeSlots saveTypeSlot(@NonNull TypeSlots typeSlot) {
         return typeSlotRepo.save(typeSlot);
     }
 
@@ -78,11 +78,11 @@ public class SlotService {
         return courtRepo.findAll();
     }
 
-    public Optional<Court> getCourtById(Long id) {
+    public Optional<Court> getCourtById(@NonNull Long id) {
         return courtRepo.findById(id);
     }
 
-    public Court saveCourt(Court court) {
+    public Court saveCourt(@NonNull Court court) {
         return courtRepo.save(court);
     }
 
@@ -96,7 +96,7 @@ public class SlotService {
     }
 
     // ===================== BOOKING LOGIC =====================
-    public SlotBooked saveBookedSlot(SlotBooked booked) {
+    public SlotBooked saveBookedSlot(@NonNull SlotBooked booked) {
 
         Long courtId = booked.getCourt().getId();
         Long slotId = booked.getSlot().getId();
@@ -125,7 +125,7 @@ public class SlotService {
     }
 
     // ===================== AVAILABLE SLOTS =====================
-    public List<Slot> getAvailableSlots(Long courtId, LocalDate date) {
+    public List<Slot> getAvailableSlots(@NonNull Long courtId, LocalDate date) {
 
         if (!courtRepo.existsById(courtId)) {
             throw new IllegalArgumentException("Sân không tồn tại");

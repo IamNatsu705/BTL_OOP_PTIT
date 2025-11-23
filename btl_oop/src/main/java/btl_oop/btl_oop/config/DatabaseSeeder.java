@@ -6,13 +6,14 @@ import btl_oop.btl_oop.Models.TypeSlots;
 import btl_oop.btl_oop.Models.User;
 import btl_oop.btl_oop.Repositories.CourtRepository;
 import btl_oop.btl_oop.Repositories.SlotRepository;
-import btl_oop.btl_oop.Repositories.TypeSlotRepository; // Bạn cần tạo Repo này
-import btl_oop.btl_oop.Repositories.UserRepository;     // Bạn cần tạo Repo này
+import btl_oop.btl_oop.Repositories.TypeSlotRepository;
+import btl_oop.btl_oop.Repositories.UserRepository;
+import btl_oop.btl_oop.Utils.HashUtil;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,11 +25,11 @@ public class DatabaseSeeder {
             CourtRepository courtRepository,
             UserRepository userRepository,
             SlotRepository slotRepository,
-            TypeSlotRepository typeSlotRepository // Cần inject thêm để tạo Slot
+            TypeSlotRepository typeSlotRepository
     ) {
         return args -> {
             // ==========================================
-            // 1. TẠO SÂN (COURTS) - Code cũ giữ nguyên
+            // 1. TẠO SÂN (COURTS)
             // ==========================================
             if (courtRepository.count() == 0) {
                 System.out.println("Đang khởi tạo 6 sân...");
@@ -51,14 +52,14 @@ public class DatabaseSeeder {
             // ==========================================
             // 2. TẠO TÀI KHOẢN ADMIN
             // ==========================================
-            // Kiểm tra nếu chưa có user nào tên là admin
-            if (userRepository.findByUserName("admin") == null) {
+            // SỬA: Dùng .isEmpty() vì Repository trả về Optional
+            if (userRepository.findByUserName("admin").isEmpty()) {
                 System.out.println("Đang khởi tạo tài khoản Admin...");
                 User admin = new User();
                 admin.setUserName("admin");
-                admin.setPassword("123456"); // Lưu ý: Nên mã hóa BCrypt nếu dùng Spring Security
+                admin.setPassword(HashUtil.hashPassword("123456"));
                 admin.setPhone("0999999999");
-                admin.setRole("admin"); // Role quan trọng để phân quyền
+                admin.setRole("admin");
                 admin.setStatus("active");
                 
                 userRepository.save(admin);
@@ -71,34 +72,31 @@ public class DatabaseSeeder {
             if (slotRepository.count() == 0) {
                 System.out.println("Đang khởi tạo 24 slot thời gian...");
 
-                // BƯỚC QUAN TRỌNG: Phải có TypeSlots trước mới tạo được Slot
-                // Kiểm tra xem có TypeSlot nào chưa, nếu chưa thì tạo 1 cái mặc định
                 List<TypeSlots> types = typeSlotRepository.findAll();
                 TypeSlots defaultType;
                 
                 if (types.isEmpty()) {
                     defaultType = new TypeSlots();
                     defaultType.setName("Giờ thường");
-                    defaultType.setPrice(java.math.BigDecimal.valueOf(50000)); // Giá ví dụ
+                    defaultType.setPrice(java.math.BigDecimal.valueOf(50000));
                     typeSlotRepository.save(defaultType);
                 } else {
                     defaultType = types.get(0);
                 }
 
-                // Tạo 24 slot từ 00:00 đến 23:00
+                // Tạo 24 slot từ 0h đến 23h
                 List<Slot> slots = new ArrayList<>();
                 for (int i = 0; i < 24; i++) {
                     Slot slot = new Slot();
                     
-                    // Tính toán giờ bắt đầu và kết thúc
-                    LocalTime startTime = LocalTime.of(i, 0); 
-                    LocalTime endTime = startTime.plusMinutes(59); // Ví dụ: 00:00 -> 00:59
+                    // SỬA: Entity Slot dùng kiểu int, không phải LocalTime
+                    int startHour = i;
+                    int endHour = i + 1; // Ví dụ: 7h đến 8h
 
-                    slot.setName(String.format("%02d:00 - %02d:59", i, i)); // Tên: "07:00 - 07:59"
-                    slot.setTimeBegin(startTime);
-                    slot.setTimeEnd(endTime);
+                    slot.setName(String.format("%02d:00 - %02d:00", startHour, endHour)); 
+                    slot.setTimeBegin(startHour); // Lưu số nguyên (ví dụ: 7)
+                    slot.setTimeEnd(endHour);     // Lưu số nguyên (ví dụ: 8)
                     
-                    // Gán loại slot (Bắt buộc do nullable = false)
                     slot.setTypeSlots(defaultType);
 
                     slots.add(slot);

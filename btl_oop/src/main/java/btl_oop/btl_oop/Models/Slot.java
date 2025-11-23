@@ -4,7 +4,6 @@ package btl_oop.btl_oop.Models;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.time.LocalTime;
 import java.util.Set;
 
 @Data
@@ -20,10 +19,10 @@ public class Slot {
     private String name; // Ví dụ: "Sáng sớm", "Tối"
 
     @Column(name = "time_begin")
-    private LocalTime timeBegin;
+    private int timeBegin;
 
     @Column(name = "time_end")
-    private LocalTime timeEnd;
+    private int timeEnd;
 
     // --- Relationships ---
 
