@@ -3,13 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin - Quản lý Giá</title>
+    <title>Admin - Quản lý Bảng Giá</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <style>
       @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap");
       body {
         font-family: "Inter", sans-serif;
+      }
+      .animate-fade-in {
+        animation: fade-in 0.5s ease-out;
       }
       @keyframes fade-in {
         from {
@@ -19,12 +22,6 @@
           opacity: 1;
         }
       }
-      .animate-fade-in {
-        animation: fade-in 0.5s ease-out;
-      }
-      .fill-current {
-        fill: currentColor;
-      }
     </style>
   </head>
   <body class="bg-gray-100">
@@ -33,7 +30,6 @@
         <div class="flex items-center justify-center h-16 border-b border-gray-700">
           <span class="text-xl font-bold text-white">Quản Trị</span>
         </div>
-        <div class="bg"></div>
         <nav class="flex-1 px-4 py-6 space-y-2">
           <a th:href="@{/admin}" class="flex items-center w-full px-4 py-2 rounded-lg transition-colors text-gray-300 hover:bg-gray-700 hover:text-white">
             <i data-lucide="bar-chart-2" class="w-5 h-5"></i>
@@ -47,78 +43,110 @@
             <i data-lucide="tag" class="w-5 h-5"></i>
             <span class="ml-3">Quản lý Giá</span>
           </a>
-          <a href="#" class="flex items-center w-full px-4 py-2 rounded-lg transition-colors text-gray-300 hover:bg-gray-700 hover:text-white">
-            <i data-lucide="credit-card" class="w-5 h-5"></i>
-            <span class="ml-3">Doanh thu</span>
-          </a>
           <a th:href="@{/admin/customers}" class="flex items-center w-full px-4 py-2 rounded-lg transition-colors text-gray-300 hover:bg-gray-700 hover:text-white">
             <i data-lucide="users" class="w-5 h-5"></i>
             <span class="ml-3">Khách hàng</span>
           </a>
-          <a th:href="@{/admin/comments}" class="flex items-center w-full px-4 py-2 rounded-lg transition-colors text-gray-300 hover:bg-gray-700 hover:text-white">
-            <i data-lucide="message-square" class="w-5 h-5"></i>
-            <span class="ml-3">Bình luận</span>
-          </a>
-        </nav>
-        <div class="px-4 py-4 border-t border-gray-700">
-          <a th:href="@{/logout}" class="flex items-center w-full px-4 py-2 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white">
+          <a th:href="@{/logout}" class="mt-auto flex items-center w-full px-4 py-2 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white">
             <i data-lucide="log-out" class="w-5 h-5"></i>
             <span class="ml-3">Đăng xuất</span>
           </a>
-        </div>
+        </nav>
       </aside>
+
       <div class="flex-1 flex flex-col overflow-hidden">
         <header class="bg-white shadow-sm border-b border-gray-200">
           <div class="flex items-center justify-between h-16 px-6" th:if="${isAuthenticated}">
-            <button class="text-gray-600">
-              <i data-lucide="menu"></i>
-            </button>
+            <button class="text-gray-600"><i data-lucide="menu"></i></button>
             <div class="flex items-center space-x-4">
-              <span class="text-gray-700 font-medium" th:text="'Chào, ' + ${currentUser}">Chào, Quản Trị Viên</span>
+              <span class="text-gray-700 font-medium" th:text="'Chào, ' + ${currentUser}">Admin</span>
             </div>
           </div>
         </header>
+
         <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
           <div class="max-w-7xl mx-auto p-6">
-            <div class="animate-fade-in">
-              <div class="flex justify-between items-center mb-6">
-                <h2 class="text-3xl font-semibold text-gray-800">Quản lý Giá (Theo khung giờ)</h2>
-                <a href="#" class="flex items-center bg-blue-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-md">
-                  <i data-lucide="plus" class="w-5 h-5 mr-2"></i>
-                  Thêm Khung Giờ
-                </a>
+            <div class="animate-fade-in space-y-6">
+              <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div>
+                  <h2 class="text-3xl font-bold text-gray-800">Quản lý Bảng Giá</h2>
+                  <p class="text-gray-500 mt-1">Thiết lập giá tiền cho các loại khung giờ (Giờ vàng, Giờ thường...)</p>
+                </div>
+                <div class="flex items-center gap-3 w-full md:w-auto">
+                  <div class="relative group w-full md:w-64">
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                      <i data-lucide="search" class="w-5 h-5 text-gray-400"></i>
+                    </div>
+                    <input
+                      type="text"
+                      id="searchInput"
+                      onkeyup="searchTable()"
+                      class="block w-full p-2.5 pl-10 text-sm border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="Tìm loại giá..."
+                    />
+                  </div>
+                  <button
+                    onclick="openModal('add')"
+                    class="flex items-center bg-blue-600 text-white px-4 py-2.5 rounded-lg hover:bg-blue-700 transition shadow-md whitespace-nowrap"
+                  >
+                    <i data-lucide="plus-circle" class="w-5 h-5 mr-2"></i>
+                    Thêm Loại Giá
+                  </button>
+                </div>
               </div>
-              <div class="bg-white rounded-lg shadow-md overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                  <thead class="bg-gray-50">
-                    <tr>
-                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tên khung giờ</th>
-                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Bắt đầu</th>
-                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kết thúc</th>
-                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Áp dụng</th>
-                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Giá (VNĐ/giờ)</th>
-                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Hành động</th>
-                    </tr>
-                  </thead>
-                  <tbody class="bg-white divide-y divide-gray-200">
-                    <tr th:each="slot : ${timeSlots}">
-                      <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" th:text="${slot.slot_name}">Giờ thấp điểm</td>
-                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600" th:text="${slot.start_time}">05:00:00</td>
-                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600" th:text="${slot.end_time}">16:00:00</td>
-                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600" th:text="${slot.days_apply}">weekday_morning</td>
-                      <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900" th:text="${#numbers.formatDecimal(slot.price_per_hour, 0, 'COMMA', 0, 'POINT')}">
-                        100,000
-                      </td>
-                      <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-4">
-                        <a href="#" class="text-indigo-600 hover:text-indigo-900">Sửa</a>
-                        <form th:action="@{/admin/pricing/delete}" method="post" style="display: inline">
-                          <input type="hidden" name="id" th:value="${slot.id}" />
-                          <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('Bạn có chắc chắn muốn xóa khung giờ này?');">Xóa</button>
-                        </form>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+
+              <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
+                <div class="overflow-x-auto">
+                  <table class="min-w-full divide-y divide-gray-200" id="pricingTable">
+                    <thead class="bg-gray-50">
+                      <tr>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase">ID</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase">Tên Loại Giờ</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase">Đơn giá (VNĐ / 1 Slot)</th>
+                        <th class="px-6 py-4 text-right text-xs font-bold text-gray-500 uppercase">Hành động</th>
+                      </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                      <tr th:each="type : ${typeSlots}" class="hover:bg-blue-50/30 transition-colors group">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" th:text="${type.id}">1</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                          <span class="text-sm font-bold text-gray-800" th:text="${type.name}">Giờ Thường</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                          <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                            <span th:text="${#numbers.formatDecimal(type.price, 0, 'COMMA', 0, 'POINT')}">50,000</span>
+                            đ
+                          </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                          <div class="flex items-center justify-end gap-2">
+                            <button
+                              th:data-id="${type.id}"
+                              th:data-name="${type.name}"
+                              th:data-price="${type.price}"
+                              onclick="openModal('edit', this)"
+                              class="text-indigo-600 hover:text-indigo-900 bg-indigo-50 p-2 rounded-lg"
+                              title="Sửa"
+                            >
+                              <i data-lucide="edit-3" class="w-4 h-4"></i>
+                            </button>
+                            <form th:action="@{/admin/pricing/delete}" method="post" class="inline">
+                              <input type="hidden" name="id" th:value="${type.id}" />
+                              <button
+                                type="submit"
+                                onclick="return confirm('Xóa loại giá này có thể ảnh hưởng đến các Slot đang dùng nó. Tiếp tục?')"
+                                class="text-red-600 hover:text-red-900 bg-red-50 p-2 rounded-lg"
+                                title="Xóa"
+                              >
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                              </button>
+                            </form>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </div>
@@ -126,8 +154,113 @@
       </div>
     </div>
 
+    <div id="pricingModal" class="fixed inset-0 z-50 hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+      <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity" onclick="closeModal()"></div>
+      <div class="flex min-h-full items-center justify-center p-4">
+        <div class="relative transform overflow-hidden rounded-xl bg-white text-left shadow-2xl transition-all sm:w-full sm:max-w-md">
+          <div class="bg-blue-600 px-4 py-4 sm:px-6 flex justify-between items-center">
+            <h3 class="text-lg font-semibold text-white" id="modalTitle">Thêm Loại Giá Mới</h3>
+            <button onclick="closeModal()" class="text-blue-100 hover:text-white"><i data-lucide="x" class="w-6 h-6"></i></button>
+          </div>
+          <form method="post" th:action="@{/admin/pricing/save}">
+            <div class="px-6 py-6 space-y-4">
+              <input type="hidden" id="typeId" name="id" />
+              <div>
+                <label class="block text-sm font-medium text-gray-700">Tên Loại Giờ</label>
+                <input
+                  type="text"
+                  name="name"
+                  id="typeName"
+                  required
+                  class="mt-1 block w-full rounded-md border-gray-300 border p-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  placeholder="Ví dụ: Giờ Vàng"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700">Đơn giá (VNĐ)</label>
+                <div class="relative mt-1 rounded-md shadow-sm">
+                  <input
+                    type="number"
+                    name="price"
+                    id="typePrice"
+                    required
+                    class="block w-full rounded-md border-gray-300 border p-2 pl-3 pr-12 focus:border-blue-500 focus:ring-blue-500"
+                    placeholder="50000"
+                  />
+                  <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                    <span class="text-gray-500 sm:text-sm">VND</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="bg-gray-50 px-6 py-3 flex flex-row-reverse">
+              <button
+                type="submit"
+                class="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 sm:ml-3 sm:w-auto"
+              >
+                Lưu
+              </button>
+              <button
+                type="button"
+                onclick="closeModal()"
+                class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+              >
+                Hủy
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
     <script>
       lucide.createIcons();
+
+      // Search Logic
+      function searchTable() {
+        let input = document.getElementById("searchInput");
+        let filter = input.value.toUpperCase();
+        let table = document.getElementById("pricingTable");
+        let tr = table.getElementsByTagName("tr");
+
+        for (let i = 1; i < tr.length; i++) {
+          let tdName = tr[i].getElementsByTagName("td")[1];
+          if (tdName) {
+            let txtValue = tdName.textContent || tdName.innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+              tr[i].style.display = "";
+            } else {
+              tr[i].style.display = "none";
+            }
+          }
+        }
+      }
+
+      // Modal Logic
+      const modal = document.getElementById("pricingModal");
+      const modalTitle = document.getElementById("modalTitle");
+      const inpId = document.getElementById("typeId");
+      const inpName = document.getElementById("typeName");
+      const inpPrice = document.getElementById("typePrice");
+
+      function openModal(mode, btnElement = null) {
+        modal.classList.remove("hidden");
+        if (mode === "add") {
+          modalTitle.textContent = "Thêm Loại Giá Mới";
+          inpId.value = "";
+          inpName.value = "";
+          inpPrice.value = "";
+        } else {
+          modalTitle.textContent = "Cập Nhật Giá";
+          inpId.value = btnElement.getAttribute("data-id");
+          inpName.value = btnElement.getAttribute("data-name");
+          inpPrice.value = btnElement.getAttribute("data-price");
+        }
+      }
+
+      function closeModal() {
+        modal.classList.add("hidden");
+      }
     </script>
   </body>
 </html>

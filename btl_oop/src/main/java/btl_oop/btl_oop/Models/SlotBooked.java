@@ -2,9 +2,10 @@ package btl_oop.btl_oop.Models;
 
 import jakarta.persistence.*;
 import lombok.Data;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Data
 @Entity
@@ -16,25 +17,33 @@ public class SlotBooked {
     @Column(name = "sb_id")
     private Long id;
 
+    // Ngày đá/chơi cầu lông (Ví dụ: ngày mai)
+    @Column(name = "booking_date", nullable = false)
+    private LocalDate bookingDate;
+
+    // Giá tiền CỦA RIÊNG SLOT NÀY tại thời điểm đặt
+    // Cần lưu lại để sau này nếu bảng giá gốc tăng thì lịch sử giá này ko bị đổi
     @Column(precision = 10, scale = 2)
-    private BigDecimal price; // Giá tại thời điểm đặt
+    private BigDecimal price; 
 
-    private LocalDate date; // Ngày đặt
+    // --- Quan hệ ---
 
-    // --- Relationships ---
-
-    // Nhiều lượt đặt có thể thuộc về một User
+    // Slot này thuộc về Hóa đơn nào?
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "bill_id", nullable = false) 
+    @JsonIgnore
+    private Bill bill;
+    
 
-    // Nhiều lượt đặt có thể thuộc về một Court
+    // Slot này đặt cho Sân nào?
     @ManyToOne
     @JoinColumn(name = "court_id", nullable = false)
+    @JsonIgnore
     private Court court;
 
-    // Nhiều lượt đặt có thể thuộc về một Slot
+    // Slot này là khung giờ nào? (Ví dụ: Ca 1, Ca 2...)
     @ManyToOne
     @JoinColumn(name = "slot_id", nullable = false)
+    @JsonIgnore
     private Slot slot;
 }

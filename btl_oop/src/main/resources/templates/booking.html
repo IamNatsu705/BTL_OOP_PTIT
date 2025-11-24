@@ -11,29 +11,15 @@
       body {
         font-family: "Inter", sans-serif;
       }
-      @keyframes fade-in {
-        from {
-          opacity: 0;
-        }
-        to {
-          opacity: 1;
-        }
-      }
-      .animate-fade-in {
-        animation: fade-in 0.5s ease-out;
-      }
-      /* Style cho loading */
-      #timeSlotContainer.loading {
-        opacity: 0.5;
+      .booked-slot {
         pointer-events: none;
       }
-      /* Thêm style cho thanh cuộn ngang để ẩn */
       .hide-scrollbar::-webkit-scrollbar {
         display: none;
       }
       .hide-scrollbar {
-        -ms-overflow-style: none; /* IE and Edge */
-        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none;
+        scrollbar-width: none;
       }
     </style>
   </head>
@@ -49,8 +35,8 @@
           </div>
 
           <div class="hidden md:flex md:items-center md:space-x-4">
-            <a th:href="@{/}" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Trang chủ</a>
-            <a th:href="@{/booking}" class="text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Đặt sân</a>
+            <a th:href="@{/}" class="text-gray-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Trang chủ</a>
+            <a th:href="@{/booking}" class="text-blue-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Đặt sân</a>
             <a th:href="@{/contact}" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Liên hệ</a>
 
             <div th:if="${isAuthenticated}">
@@ -79,16 +65,19 @@
         </div>
       </div>
     </nav>
+
     <main>
-      <h1 class="flex justify-center w-full text-3xl my-10">Đặt sân ngay hôm nay</h1>
-      <div class="flex justify-end mx-[150px]"><input type="date" id="bookedDate" value="" /></div>
-      <div class="overflow-auto shadow bg-white hide-scrollbar mx-[150px]">
-        <table class="min-w-full border border-gray-300 text-sm border-separate border-spacing-[1px]" id="tableSlot">
+      <h1 class="flex justify-center w-full text-3xl my-10 font-bold text-gray-800">Đặt sân ngay hôm nay</h1>
+      <div class="flex justify-end mx-[150px] mb-4">
+        <input type="date" id="bookedDate" class="border border-gray-300 rounded px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+      </div>
+
+      <div class="overflow-auto shadow bg-white hide-scrollbar mx-[150px] rounded-lg border border-gray-200">
+        <table class="min-w-full border-separate border-spacing-[1px] text-sm" id="tableSlot">
           <thead class="bg-blue-50">
             <tr>
-              <th class="sticky left-0 z-20 bg-blue-100 border border-gray-300 px-4 py-3 text-gray-700 font-semibold text-center shadow-md">Sân</th>
-
-              <th th:each="c : ${#numbers.sequence(0,23)}" class="border border-gray-300 px-4 py-3 font-semibold text-gray-700 text-center bg-blue-50">
+              <th class="sticky left-0 z-20 bg-blue-100 border border-gray-300 px-4 py-3 text-gray-700 font-semibold text-center shadow-md min-w-[100px]">Sân</th>
+              <th th:each="c : ${#numbers.sequence(0,23)}" class="border border-gray-300 px-2 py-3 font-semibold text-gray-700 text-center bg-blue-50 min-w-[60px]">
                 <div th:if="${c>9}" class="flex items-center justify-center font-mono">
                   00:
                   <span th:text="${c}"></span>
@@ -102,400 +91,245 @@
               </th>
             </tr>
           </thead>
-
           <tbody>
             <tr th:each="court : ${#numbers.sequence(1,6)}" class="odd:bg-white even:bg-gray-50">
               <td class="sticky left-0 z-10 bg-white border border-gray-300 px-4 py-3 font-semibold text-blue-600 text-center shadow-md">
-                <div class="flex gap-2 justify-center">
-                  Sân
-                  <p th:text="${court}"></p>
-                </div>
+                Sân
+                <span th:text="${court}"></span>
               </td>
-
               <td
                 th:each="slot : ${#numbers.sequence(0,23)}"
-                th:id="${court + '_' + slot}"
                 th:data-court="${court}"
                 th:data-slot="${slot}"
                 th:data-price="0"
-                th:data-status="available"
-                class="border border-gray-300 px-4 py-3 text-center font-mono hover:bg-blue-100 cursor-pointer transition select-none rounded"
+                class="border border-gray-300 px-1 py-3 text-center cursor-pointer transition select-none hover:bg-blue-100 relative group"
               ></td>
             </tr>
           </tbody>
         </table>
       </div>
-      <div class="mx-[150px] mt-10 p-5 bg-white shadow rounded-lg">
-        <h2 class="text-xl font-bold mb-3">🧾 Hóa đơn của bạn</h2>
 
-        <div id="invoiceDetail" class="text-sm border rounded p-3 bg-gray-50">
-          <p class="text-gray-500">Chưa chọn khung giờ nào.</p>
+      <div class="mx-[150px] mt-10 p-5 bg-white shadow rounded-lg mb-10">
+        <h2 class="text-xl font-bold mb-3 flex items-center gap-2">
+          <i data-lucide="receipt" class="w-5 h-5"></i>
+          Hóa đơn tạm tính
+        </h2>
+        <div id="invoiceDetail" class="text-sm border rounded p-3 bg-gray-50 min-h-[50px]">
+          <p class="text-gray-500 italic">Vui lòng chọn khung giờ trên bảng.</p>
         </div>
-
-        <div class="flex justify-between mt-4 text-lg font-semibold">
+        <div class="flex justify-between mt-4 text-lg font-bold text-gray-800">
           <span>Tổng tiền:</span>
-          <span id="invoiceTotal">0₫</span>
+          <span id="invoiceTotal" class="text-blue-600">0₫</span>
         </div>
-
-        <button id="btnBook" class="mt-5 w-full bg-blue-600 text-white py-3 rounded hover:bg-blue-700 transition">Đặt sân ngay</button>
+        <button id="btnBook" class="mt-5 w-full bg-blue-600 text-white py-3 rounded hover:bg-blue-700 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed">
+          Xác nhận đặt sân
+        </button>
       </div>
     </main>
-    <footer class="bg-gray-800 text-gray-300 mt-16">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div>
-            <h5 class="text-lg font-bold text-white mb-4">Về chúng tôi</h5>
-            <p class="text-sm">Hệ thống sân cầu lông hiện đại, chất lượng cao, phục vụ đam mê thể thao của bạn.</p>
-          </div>
-          <div>
-            <h5 class="text-lg font-bold text-white mb-4">Liên kết nhanh</h5>
-            <ul class="space-y-2 text-sm">
-              <li><a th:href="@{/}" class="hover:text-white">Trang chủ</a></li>
-              <li>
-                <a th:href="@{/booking}" class="hover:text-white">Đặt sân</a>
-              </li>
-              <li><a href="#" class="hover:text-white">Khuyến mãi</a></li>
-              <li><a href="#" class="hover:text-white">Liên hệ</a></li>
-            </ul>
-          </div>
-          <div>
-            <h5 class="text-lg font-bold text-white mb-4">Liên hệ</h5>
-            <ul class="space-y-2 text-sm">
-              <li class="flex items-center">
-                <i data-lucide="map-pin" class="w-4 h-4 mr-2"></i>
-                123 Đường ABC, Quận 1, TP. HCM
-              </li>
-              <li class="flex items-center">
-                <i data-lucide="phone" class="w-4 h-4 mr-2"></i>
-                (028) 3812 3456
-              </li>
-              <li class="flex items-center">
-                <i data-lucide="mail" class="w-4 h-4 mr-2"></i>
-                support@sancaulong.com
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h5 class="text-lg font-bold text-white mb-4">Theo dõi chúng tôi</h5>
-            <div class="flex space-x-4"></div>
-          </div>
-        </div>
-        <div class="mt-8 border-t border-gray-700 pt-8 text-center text-sm">
-          <p>&copy; 2025 Badminton Court. All rights reserved.</p>
-        </div>
-      </div>
+
+    <footer class="bg-gray-800 text-gray-300 mt-16 p-8 text-center">
+      <p>&copy; 2025 Badminton Court. All rights reserved.</p>
     </footer>
+
     <script th:inline="javascript">
       const bookedDate = document.getElementById("bookedDate");
       bookedDate.value = new Date().toLocaleDateString("en-CA");
 
-      // Biến DOM cho hóa đơn (BẠN THÊM)
       const invoiceDetail = document.getElementById("invoiceDetail");
       const invoiceTotal = document.getElementById("invoiceTotal");
       const btnBook = document.getElementById("btnBook");
-
-      // Mảng 2 chiều DOM tham chiếu đến các slot
       const table = document.getElementById("tableSlot");
+
+      // Cache DOM table
       const rows = table.querySelectorAll("tbody tr");
       const tableSlot = [];
       rows.forEach((row) => {
         const cell = Array.from(row.querySelectorAll("td[data-slot]"));
         tableSlot.push(cell);
       });
-      //
-      //Api lấy dữ liệu
-      let priceSlots = [];
+
+      const selectedSlots = [];
+
+      // === 1. API Lấy Giá ===
       const getPriceSlots = async () => {
-        const url = `/getdata/slots/price?date=${bookedDate.value}`;
+        const url = `/slots/price?date=${bookedDate.value}`;
         try {
           const respon = await fetch(url);
-          priceSlots = await respon.json();
-          console.log("Lấy được giá rồi hehe");
+          const data = await respon.json();
+
+          data.forEach((item) => {
+            // MAPPING: DB ID (1-based) -> UI Array Index (0-based)
+            const courtIndex = item.courtId - 1;
+            const slotIndex = item.slotId - 1; // <--- SỬA: Trừ 1 để khớp với UI 0-23
+
+            if (tableSlot[courtIndex] && tableSlot[courtIndex][slotIndex]) {
+              const cell = tableSlot[courtIndex][slotIndex];
+              cell.dataset.price = item.price;
+              cell.title = `Giá: ${new Intl.NumberFormat("vi-VN").format(item.price)}đ`;
+            }
+          });
         } catch (error) {
-          console.error("❌ Lỗi khi tải dữ liệu price slots:", error);
+          console.error("Lỗi giá:", error);
         }
       };
 
-      let slotBookeds = [];
+      // === 2. API Lấy Slot Đã Đặt ===
       const getSlotBooked = async () => {
-        const url = `/getdata/slots/booked?date=${bookedDate.value}`;
+        const url = `/slots/booked?date=${bookedDate.value}`;
         try {
           const respon = await fetch(url);
-          slotBookeds = await respon.json();
-          console.log("Lấy được getSlotBooked rồi hehe");
+          const data = await respon.json();
+          resetTableUI();
+
+          data.forEach((item) => {
+            // MAPPING: DB ID (1-based) -> UI Array Index (0-based)
+            const cId = item.courId || item.courtId;
+            const courtIndex = cId - 1;
+            const slotIndex = item.slotId - 1; // <--- SỬA: Trừ 1 để khớp với UI 0-23
+
+            if (tableSlot[courtIndex] && tableSlot[courtIndex][slotIndex]) {
+              const cell = tableSlot[courtIndex][slotIndex];
+              cell.classList.add("bg-red-500", "text-white", "cursor-not-allowed", "booked-slot");
+              cell.classList.remove("hover:bg-blue-100");
+              cell.title = "Đã có người đặt";
+            }
+          });
         } catch (error) {
-          console.error("❌ Lỗi khi tải dữ liệu booked slots:", error);
-          slotBookeds = [];
+          console.error("Lỗi booking:", error);
         }
       };
 
-      //Hàm xử lý logic
-      const renderPriceSlot = async () => {
-        await getPriceSlots();
-        priceSlots.forEach((slot) => {
-          const courtIndex = slot.court_id - 1;
-          const slotIndex = slot.slot_id;
-          if (tableSlot[courtIndex] && tableSlot[courtIndex][slotIndex]) {
-            const cell = tableSlot[courtIndex][slotIndex];
-            cell.dataset.price = slot.price;
-            cell.setAttribute("title", slot.price);
-          }
-        });
-      };
-
-      const renderSlotBooked = async () => {
-        await getSlotBooked();
-
-        // BẠN THÊM: Xóa trạng thái chọn của người dùng trước khi reset booked
+      // === UI Helpers ===
+      const resetTableUI = () => {
+        selectedSlots.length = 0;
+        updateInvoice();
         tableSlot.flat().forEach((cell) => {
-          cell.classList.remove("bg-blue-600"); // Xóa màu đã chọn
-        });
-
-        // Reset trạng thái đã đặt (booked)
-        tableSlot.flat().forEach((cell) => {
-          cell.classList.remove("bg-red-500", "text-white", "cursor-not-allowed", "booked-slot");
+          cell.classList.remove("bg-blue-600", "text-white", "bg-red-500", "cursor-not-allowed", "booked-slot");
           cell.classList.add("hover:bg-blue-100");
-          cell.removeAttribute("title");
         });
-
-        // Đánh dấu lại các slot đã đặt
-        slotBookeds.forEach((slot) => {
-          const courtIndex = slot.court_id - 1;
-          const slotIndex = slot.slot_id;
-          if (tableSlot[courtIndex] && tableSlot[courtIndex][slotIndex]) {
-            const cell = tableSlot[courtIndex][slotIndex];
-            cell.classList.add("bg-red-500", "text-white", "cursor-not-allowed", "booked-slot");
-            cell.classList.remove("hover:bg-blue-100");
-          }
-        });
-
-        // BẠN THÊM: Gắn lại event listeners sau khi render
-        addSlotListeners();
       };
 
-      // BẠN THÊM: Logic xử lý Đặt Sân (chọn 1 sân, liên tiếp)
-      const selectedSlots = []; // Sử dụng MẢNG để lưu trữ và kiểm tra thứ tự
+      const formatCurrency = (val) => new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(val);
 
-      // BẠN THÊM: Định dạng tiền tệ
-      const formatCurrency = (amount) => {
-        return new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(amount);
-      };
-
-      // BẠN THÊM: Hàm cập nhật chi tiết hóa đơn và tổng tiền
       const updateInvoice = () => {
-        const detail = [];
-        let totalAmount = 0;
-
-        // Sắp xếp lại (dù đã được sắp xếp trong handleSlotClick, đảm bảo an toàn)
+        let total = 0;
+        let html = [];
         selectedSlots.sort((a, b) => a.slot - b.slot);
 
-        selectedSlots.forEach((slotData) => {
-          totalAmount += slotData.price;
-
-          // Tạo chi tiết hiển thị
-          detail.push(`
-                  <div class="flex justify-between py-1 border-b border-gray-200">
-                      <span class="text-blue-700 font-medium">Sân ${slotData.court} - Giờ ${slotData.slot}:00</span>
-                      <span>${formatCurrency(slotData.price)}</span>
-                  </div>
-              `);
+        selectedSlots.forEach((s) => {
+          total += s.price;
+          html.push(`<div class="flex justify-between py-1 border-b">
+                <span>Sân ${s.court} - Giờ ${s.slot}:00</span>
+                <span>${formatCurrency(s.price)}</span>
+            </div>`);
         });
 
-        // Cập nhật giao diện
-        if (detail.length === 0) {
-          invoiceDetail.innerHTML = '<p class="text-gray-500">Chưa chọn khung giờ nào.</p>';
+        if (html.length === 0) {
+          invoiceDetail.innerHTML = '<p class="text-gray-500 italic">Chưa chọn khung giờ nào.</p>';
           btnBook.disabled = true;
-          btnBook.classList.add("opacity-50", "cursor-not-allowed");
+          btnBook.classList.add("opacity-50");
         } else {
-          invoiceDetail.innerHTML = detail.join("");
+          invoiceDetail.innerHTML = html.join("");
           btnBook.disabled = false;
-          btnBook.classList.remove("opacity-50", "cursor-not-allowed");
+          btnBook.classList.remove("opacity-50");
         }
-
-        invoiceTotal.textContent = formatCurrency(totalAmount);
-        return totalAmount; // Trả về tổng tiền để sử dụng khi gửi API
+        invoiceTotal.innerText = formatCurrency(total);
       };
 
-      // BẠN THÊM: Hàm xử lý khi người dùng click vào một slot
-      const handleSlotClick = (event) => {
-        const cell = event.currentTarget;
-
-        // 1. Kiểm tra nếu slot đã được đặt (màu đỏ) thì bỏ qua
-        if (cell.classList.contains("booked-slot")) {
-          return;
-        }
+      const handleSlotClick = (e) => {
+        const cell = e.target.closest("td");
+        if (!cell || !cell.hasAttribute("data-slot") || cell.classList.contains("booked-slot")) return;
 
         const court = parseInt(cell.dataset.court);
         const slot = parseInt(cell.dataset.slot);
-        const price = parseInt(cell.dataset.price);
-        const slotData = { court, slot, price, element: cell };
-        const index = selectedSlots.findIndex((s) => s.court === court && s.slot === slot);
+        const price = parseInt(cell.dataset.price || 0);
 
-        if (index !== -1) {
-          // 2. Nếu đã chọn: Hủy chọn (remove)
-          selectedSlots.splice(index, 1); // Xóa khỏi mảng
+        // Logic 1: Chỉ chọn 1 sân
+        if (selectedSlots.length > 0 && selectedSlots[0].court !== court) {
+          if (confirm("Chỉ được chọn 1 sân. Chọn lại từ đầu?")) selectedSlots.length = 0;
+          else return;
+        }
+
+        const idx = selectedSlots.findIndex((s) => s.slot === slot);
+        if (idx >= 0) {
+          selectedSlots.splice(idx, 1);
           cell.classList.remove("bg-blue-600", "text-white");
-          cell.classList.add("hover:bg-blue-100");
         } else {
-          // Quy tắc 1: Nếu đã có slot được chọn, phải là cùng sân
-          if (selectedSlots.length > 0 && selectedSlots[0].court !== court) {
-            alert("Bạn chỉ có thể đặt các khung giờ trên MỘT SÂN duy nhất cho mỗi hóa đơn!");
-            return;
-          }
-          // Thêm slot mới vào mảng
-          selectedSlots.push(slotData);
-          // Quy tắc 2: Kiểm tra tính liên tiếp sau khi thêm
-          selectedSlots.sort((a, b) => a.slot - b.slot); // Sắp xếp theo slotId
-          let isConsecutive = true;
-          for (let i = 0; i < selectedSlots.length - 1; i++) {
-            if (selectedSlots[i].slot + 1 !== selectedSlots[i + 1].slot) {
-              isConsecutive = false;
-              break;
+          // Logic 2: Chọn liên tiếp
+          const temp = [...selectedSlots, { slot }].sort((a, b) => a.slot - b.slot);
+          for (let i = 0; i < temp.length - 1; i++) {
+            if (temp[i + 1].slot - temp[i].slot !== 1) {
+              alert("Phải chọn giờ liên tiếp!");
+              return;
             }
           }
-          if (!isConsecutive) {
-            // Nếu không liên tiếp:
-            alert("Các khung giờ đặt phải là LIÊN TIẾP nhau!");
-            selectedSlots.pop(); // Xóa slot vừa thêm
-            return;
-          }
-          // Nếu hợp lệ: Đánh dấu đã chọn
+          selectedSlots.push({ court, slot, price, element: cell });
           cell.classList.add("bg-blue-600", "text-white");
-          cell.classList.remove("hover:bg-blue-100");
         }
-        // 4. Cập nhật giao diện hóa đơn và màu sắc
-        updateSlotSelectionDisplay();
         updateInvoice();
       };
-      // BẠN THÊM: Hàm cập nhật màu sắc slot đã chọn (vì logic hủy chọn phức tạp hơn)
-      const updateSlotSelectionDisplay = () => {
-        // Xóa tất cả trạng thái 'đã chọn' cũ trên toàn bộ bảng
-        tableSlot.flat().forEach((cell) => {
-          if (!cell.classList.contains("booked-slot")) {
-            cell.classList.remove("bg-blue-600", "text-white");
-            cell.classList.add("hover:bg-blue-100");
-          }
-        });
-        // Chỉ đánh dấu các slot HỢP LỆ trong selectedSlots
-        selectedSlots.forEach((slot) => {
-          slot.element.classList.add("bg-blue-600", "text-white");
-          slot.element.classList.remove("hover:bg-blue-100");
-        });
-      };
 
-      // BẠN THÊM: Hàm gửi yêu cầu đặt sân
+      // === 3. Gửi Booking ===
       const sendBookingRequest = async () => {
-        if (selectedSlots.length === 0) {
-          alert("Vui lòng chọn khung giờ để đặt sân.");
-          return;
-        }
+        if (selectedSlots.length === 0) return;
 
-        // Lấy tổng tiền chính xác từ hàm updateInvoice trước khi gửi
-        const calculatedTotal = updateInvoice();
+        const params = new URLSearchParams();
+        params.append("courtId", selectedSlots[0].court);
+        params.append("date", bookedDate.value);
 
-        // Chuẩn bị dữ liệu gửi đi
-        const requestData = {
-          bookingDate: bookedDate.value,
-          totalAmount: calculatedTotal,
-          selectedSlots: selectedSlots.map((s) => ({
-            courtId: s.court,
-            slotId: s.slot,
-            price: s.price,
-          })),
-        };
+        // MAPPING: UI Index (0-based) -> DB ID (1-based)
+        // Slot 0 (0h-1h) -> ID 1
+        const ids = selectedSlots.map((s) => s.slot + 1).join(",");
+        params.append("slotIds", ids);
 
-        btnBook.disabled = true; // Vô hiệu hóa nút để tránh double click
+        btnBook.disabled = true;
+        btnBook.innerText = "Đang xử lý...";
 
         try {
-          const response = await fetch("/booking", {
-            // Đường dẫn API của bạn
+          const res = await fetch("/booking/create", {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(requestData),
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: params,
           });
-
-          // const result = await response.json();
-
-          // if (response.ok) {
-          //   alert(`Đặt sân thành công! Mã hóa đơn: ${result.bookingId}`);
-          //   // Reset trạng thái chọn
-          //   selectedSlots.length = 0;
-          //   // Tải lại dữ liệu slot đã đặt để cập nhật màu đỏ
-          //   await init();
-          // } else {
-          //   alert(`Đặt sân thất bại: ${result.message}`);
-          // }
-          if (response.redirected) {
-            alert("Đặt sân thành công! Trang sẽ được làm mới.");
-            window.location.href = response.url;
-            selectedSlots.length = 0;
-          } else if (!response.ok) {
-            const errorText = await response.text();
-            alert(`Đặt sân thất bại (Status: ${response.status}). Vui lòng kiểm tra lại: ${errorText.substring(0, 50)}...`);
+          const text = await res.text();
+          if (text === "SUCCESS") {
+            alert("Đặt sân thành công!");
+            window.location.href = "/history";
+          } else if (text === "REDIRECT_LOGIN") {
+            window.location.href = "/login";
           } else {
-            alert("Đặt sân hoàn tất. Vui lòng tải lại trang.");
-            window.location.reload();
+            alert("Lỗi: " + text);
+            btnBook.disabled = false;
+            btnBook.innerText = "Xác nhận đặt sân";
           }
-        } catch (error) {
-          console.error("Lỗi mạng/hệ thống khi đặt sân:", error);
-          alert("Có lỗi xảy ra, vui lòng thử lại sau.");
-        } finally {
-          btnBook.disabled = false; // Mở lại nút
-          updateInvoice(); // Cập nhật lại trạng thái hóa đơn sau khi hoàn tất
+        } catch (e) {
+          console.error(e);
+          alert("Lỗi kết nối!");
+          btnBook.disabled = false;
+          btnBook.innerText = "Xác nhận đặt sân";
         }
       };
 
-      // BẠN THÊM: Hàm so sánh ngày để chặn ngày trong quá khứ
-      const compareDates = () => {
-        const selectedDate = new Date(bookedDate.value);
-        const today = new Date();
-
-        // Chuẩn hóa về 00:00:00 để so sánh chỉ ngày
-        today.setHours(0, 0, 0, 0);
-        selectedDate.setHours(0, 0, 0, 0);
-
-        if (selectedDate.getTime() < today.getTime()) {
-          return "PAST";
-        }
-        return "FUTURE_OR_TODAY";
-      };
-
-      // BẠN THÊM: Hàm gắn sự kiện click cho tất cả các ô slot
-      const addSlotListeners = () => {
-        tableSlot.flat().forEach((cell) => {
-          // Xóa listener cũ trước khi thêm mới (tránh trùng lặp)
-          cell.removeEventListener("click", handleSlotClick);
-          cell.addEventListener("click", handleSlotClick);
-        });
-      };
-
-      const init = async () => {
-        await renderPriceSlot();
-        await renderSlotBooked();
-        updateInvoice();
-      };
-
-      //Các event
-      init();
-
-      // BẠN THÊM: Gắn event cho nút đặt sân
+      // Init
+      table.addEventListener("click", handleSlotClick);
       btnBook.addEventListener("click", sendBookingRequest);
-
-      // BẠN SỬA: Thay đổi event listener để kiểm tra ngày và reset logic đặt sân
       bookedDate.addEventListener("change", async () => {
-        if (compareDates() === "PAST") {
-          alert("Bạn không thể đặt sân cho ngày trong quá khứ!");
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        if (new Date(bookedDate.value) < today) {
+          alert("Không chọn ngày quá khứ");
           bookedDate.value = new Date().toLocaleDateString("en-CA");
           return;
         }
-        selectedSlots.length = 0;
-        await init();
+        await getPriceSlots();
+        await getSlotBooked();
       });
-    </script>
-    <script>
-      lucide.createIcons();
+
+      (async () => {
+        await getPriceSlots();
+        await getSlotBooked();
+        lucide.createIcons();
+      })();
     </script>
   </body>
 </html>

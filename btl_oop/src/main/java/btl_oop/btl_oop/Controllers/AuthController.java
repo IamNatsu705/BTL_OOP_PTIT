@@ -41,7 +41,7 @@ public class AuthController {
             session.setAttribute("role", user.getRole());
             session.setAttribute("isAuthenticated", true);
 
-            if ("admin".equals(user.getRole())) return "redirect:/admin";
+            if ("ADMIN".equals(user.getRole())) return "redirect:/admin";
             else return "redirect:/";
         } else {
             return "redirect:/login?error";
