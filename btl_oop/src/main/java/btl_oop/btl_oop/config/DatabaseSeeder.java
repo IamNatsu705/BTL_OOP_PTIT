@@ -53,7 +53,7 @@ public class DatabaseSeeder implements CommandLineRunner {
         System.out.println("Hoàn tất khởi tạo dữ liệu!");
     }
 
-    // 1. Tạo Giá và Khung Giờ (5:00 -> 22:00)
+    // 1. Tạo Giá và Khung Giờ (00:00 -> 22:00)
     private void seedTypeSlotsAndSlots() {
         TypeSlots normal = new TypeSlots();
         normal.setName("Giờ Thường");

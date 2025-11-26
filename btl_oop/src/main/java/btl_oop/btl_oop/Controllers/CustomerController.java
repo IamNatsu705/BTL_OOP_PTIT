@@ -30,10 +30,8 @@ public class CustomerController {
             return "redirect:/login";
         }
 
-        // Lấy danh sách Hóa đơn (Bill)
         List<Bill> historyBills = bookingService.getHistoryByUserId(currentUser.getUserId());
-        
-        // Gửi sang View biến tên là 'bills'
+        // Write a service return bills{ bill.id, bill.totatalAmount, bill.createdAt, slotBookedList{court.name, bookingDate, slot.name, price}}
         model.addAttribute("bills", historyBills); 
         return "user_history";
     }

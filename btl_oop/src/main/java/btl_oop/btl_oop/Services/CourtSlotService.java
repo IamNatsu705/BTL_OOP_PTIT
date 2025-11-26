@@ -64,13 +64,25 @@ public class CourtSlotService {
         return slotPrices;
     }
     // lấy slotcourt đã có người đặt trong ngày
-    public record SlotBookedDTO(Long courId, Long slotId, BigDecimal price, User user){};
+    public record SlotBookedDTO(Long courId, Long slotId, BigDecimal price, String fullName, String phone){};
+
     public List<SlotBookedDTO> getSlotBooked(LocalDate date) {
         List<SlotBooked> slotBooked = slotBookedRepo.findByBookingDate(date);
         List<SlotBookedDTO> slotBookedDTO = new ArrayList<>();
+        
         for (SlotBooked sb : slotBooked) {
-            SlotBookedDTO slotBookedDTO1 = new SlotBookedDTO(sb.getCourt().getId(), sb.getSlot().getId(), sb.getPrice(), sb.getBill().getUser());
-            slotBookedDTO.add(slotBookedDTO1);
+            // Lấy User từ hóa đơn
+            User user = sb.getBill().getUser();
+            
+            // 2. Map thêm số điện thoại vào DTO
+            SlotBookedDTO dto = new SlotBookedDTO(
+                sb.getCourt().getId(), 
+                sb.getSlot().getId(), 
+                sb.getPrice(), 
+                user.getFullName(), // Lấy tên đầy đủ
+                user.getPhone()     // Lấy số điện thoại
+            );
+            slotBookedDTO.add(dto);
         }
         return slotBookedDTO; 
     }

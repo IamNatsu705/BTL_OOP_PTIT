@@ -1,14 +1,15 @@
 package btl_oop.btl_oop.Controllers;
 
 import btl_oop.btl_oop.Services.CourtSlotService;
-import btl_oop.btl_oop.Models.TypeSlots;
+import btl_oop.btl_oop.Models.*;
 import btl_oop.btl_oop.Repositories.BillRepository;
+import btl_oop.btl_oop.Repositories.SlotRepository;
 import btl_oop.btl_oop.Repositories.UserRepository;
 import btl_oop.btl_oop.Repositories.TypeSlotRepository;
 import lombok.RequiredArgsConstructor;
-
+import java.util.*;
 import java.math.BigDecimal;
-
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,17 +24,45 @@ public class AdminController {
     private final BillRepository billRepo;
     private final UserRepository userRepo;
     private final TypeSlotRepository typeSlotRepo;
+    private final SlotRepository slotRepo;
     @GetMapping("/admin")
     public String adminOverview(Model model) {
-        // Lấy số liệu thật từ DB
+        // 1. Thống kê KHÁCH HÀNG
         long totalCustomers = userRepo.count();
-        long totalBills = billRepo.count();
-
-        model.addAttribute("monthlyRevenue", 0); // Tạm thời để 0 (cần viết query tính tổng tiền sau)
-        model.addAttribute("todayBookings", totalBills); // Tổng số đơn đã đặt
-        model.addAttribute("totalCustomers", totalCustomers);
         
-        // Tạm bỏ biểu đồ doanh thu mock, sau này làm query group by date sau
+        // 2. Thống kê ĐƠN HÀNG & DOANH THU
+        List<Bill> allBills = billRepo.findAll();
+        
+        // Tính doanh thu tổng (hoặc tháng này nếu muốn query kỹ hơn)
+        BigDecimal totalRevenue = allBills.stream()
+                .map(Bill::getTotalAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        long totalBookings = allBills.size();
+
+        // 3. Thống kê HÔM NAY (Giả định đơn giản)
+        // Để chính xác cần viết Query trong Repository: findByDate...
+        // Ở đây mình lấy ví dụ số liệu mẫu hoặc tính sơ bộ
+        long todayBookings = 5; // Ví dụ: Cần query DB đếm số bill created_at hôm nay
+        BigDecimal todayRevenue = new BigDecimal("250000"); 
+
+        // 4. Trạng thái SÂN NGAY LÚC NÀY (Real-time)
+        // Logic: Lấy giờ hiện tại -> Check xem bao nhiêu sân đang có khách
+        // (Tạm thời hardcode hoặc gọi service check)
+        int courtsOccupied = 2; 
+        int totalCourts = 6;
+
+        // Gửi sang View
+        model.addAttribute("totalCustomers", totalCustomers);
+        model.addAttribute("totalBookings", totalBookings);
+        model.addAttribute("totalRevenue", totalRevenue);
+        
+        model.addAttribute("todayBookings", todayBookings);
+        model.addAttribute("todayRevenue", todayRevenue);
+        
+        model.addAttribute("courtsOccupied", courtsOccupied);
+        model.addAttribute("totalCourts", totalCourts);
+
         return "admin-overview";
     }
 
@@ -48,40 +77,55 @@ public class AdminController {
     // hoặc update dần sau.
     @GetMapping("/admin/pricing")
     public String adminPricing(Model model) {
-        // Lấy danh sách TypeSlots thật từ Database
+        // 1. Lấy 3 mức giá
         model.addAttribute("typeSlots", typeSlotRepo.findAll());
+        
+        // 2. Lấy danh sách 24 Slot (Sắp xếp theo giờ bắt đầu để hiển thị từ 0h -> 23h)
+        model.addAttribute("slots", slotRepo.findAll(Sort.by(Sort.Direction.ASC, "timeBegin")));
+        
         return "admin-pricing";
     }
-    @PostMapping("/admin/pricing/save")
-    public String savePricing(@RequestParam(required = false) Long id,
-                              @RequestParam String name,
-                              @RequestParam BigDecimal price) {
-        TypeSlots typeSlot;
-        if (id != null) {
-            // Cập nhật
-            typeSlot = typeSlotRepo.findById(id).orElse(new TypeSlots());
-        } else {
-            // Thêm mới
-            typeSlot = new TypeSlots();
+
+    // --- 1. CẬP NHẬT GIÁ TIỀN (Giữ nguyên) ---
+    @PostMapping("/admin/pricing/update")
+    public String updatePrice(@RequestParam Long id, @RequestParam BigDecimal price) {
+        TypeSlots typeSlot = typeSlotRepo.findById(id).orElse(null);
+        if (typeSlot != null) {
+            typeSlot.setPrice(price);
+            typeSlotRepo.save(typeSlot);
         }
-        typeSlot.setName(name);
-        typeSlot.setPrice(price);
-        typeSlotRepo.save(typeSlot);
-        
         return "redirect:/admin/pricing";
     }
 
-    // API Xóa
-    @PostMapping("/admin/pricing/delete")
-    public String deletePricing(@RequestParam Long id) {
-        try {
-            typeSlotRepo.deleteById(id);
-        } catch (Exception e) {
-            // Có thể lỗi nếu TypeSlot này đang được dùng bởi các Slot khác (Foreign Key)
-            // Trong thực tế nên dùng Soft Delete hoặc báo lỗi ra giao diện
-            System.out.println("Không thể xóa do ràng buộc dữ liệu: " + e.getMessage());
+    // --- 2. CẤU HÌNH LOẠI GIÁ CHO TỪNG SLOT (MỚI) ---
+    // Chúng ta dùng Map<String, String> để hứng tất cả các ô select gửi lên
+    // Key sẽ là "slot_1", "slot_2"... Value là ID của TypeSlot (ví dụ "1", "2")
+    @PostMapping("/admin/pricing/configure")
+    public String configureSchedule(@RequestParam Map<String, String> allParams) {
+        
+        // Duyệt qua tất cả tham số gửi lên
+        for (Map.Entry<String, String> entry : allParams.entrySet()) {
+            String key = entry.getKey();   // Ví dụ: "slot_5" (5 là id của slot)
+            String value = entry.getValue(); // Ví dụ: "2" (2 là id của TypeSlot)
+
+            if (key.startsWith("slot_")) {
+                try {
+                    Long slotId = Long.parseLong(key.substring(5)); // Lấy số 5 ra
+                    Long typeId = Long.parseLong(value);
+
+                    Slot slot = slotRepo.findById(slotId).orElse(null);
+                    TypeSlots type = typeSlotRepo.findById(typeId).orElse(null);
+
+                    if (slot != null && type != null) {
+                        slot.setTypeSlots(type);
+                        slotRepo.save(slot);
+                    }
+                } catch (NumberFormatException e) {
+                    // Bỏ qua lỗi convert
+                }
+            }
         }
-        return "redirect:/admin/pricing";
+        return "redirect:/admin/pricing?success=saved";
     }
 
     @GetMapping("/admin/customers")

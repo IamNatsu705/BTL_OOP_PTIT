@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin - Quản lý Bảng Giá</title>
+    <title>Admin - Cấu hình Giá</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <style>
@@ -11,142 +11,153 @@
       body {
         font-family: "Inter", sans-serif;
       }
-      .animate-fade-in {
-        animation: fade-in 0.5s ease-out;
-      }
-      @keyframes fade-in {
-        from {
-          opacity: 0;
-        }
-        to {
-          opacity: 1;
-        }
-      }
+      /* Style cho select option để dễ nhìn */
+      option.type-1 {
+        background-color: #f0fdf4;
+        color: #166534;
+      } /* Xanh lá nhẹ */
+      option.type-2 {
+        background-color: #fffbeb;
+        color: #92400e;
+        font-weight: bold;
+      } /* Vàng đậm */
+      option.type-3 {
+        background-color: #fef2f2;
+        color: #991b1b;
+        font-weight: bold;
+      } /* Đỏ đậm */
     </style>
   </head>
   <body class="bg-gray-100">
     <div class="flex h-screen">
-      <aside class="bg-gray-800 text-gray-300 w-64 transition-all duration-300 flex flex-col flex-shrink-0">
+      <aside class="bg-gray-800 text-gray-300 w-64 flex flex-col flex-shrink-0">
         <div class="flex items-center justify-center h-16 border-b border-gray-700">
           <span class="text-xl font-bold text-white">Quản Trị</span>
         </div>
         <nav class="flex-1 px-4 py-6 space-y-2">
-          <a th:href="@{/admin}" class="flex items-center w-full px-4 py-2 rounded-lg transition-colors text-gray-300 hover:bg-gray-700 hover:text-white">
-            <i data-lucide="bar-chart-2" class="w-5 h-5"></i>
-            <span class="ml-3">Tổng quan</span>
+          <a th:href="@{/admin}" class="flex items-center w-full px-4 py-2 rounded-lg hover:bg-gray-700">
+            <i data-lucide="bar-chart-2" class="w-5 h-5 mr-3"></i>
+            Tổng quan
           </a>
-          <a th:href="@{/admin/courts}" class="flex items-center w-full px-4 py-2 rounded-lg transition-colors text-gray-300 hover:bg-gray-700 hover:text-white">
-            <i data-lucide="settings" class="w-5 h-5"></i>
-            <span class="ml-3">Quản lý Sân</span>
+          <a th:href="@{/admin/courts}" class="flex items-center w-full px-4 py-2 rounded-lg hover:bg-gray-700">
+            <i data-lucide="calendar" class="w-5 h-5 mr-3"></i>
+            Lịch Sân
           </a>
-          <a th:href="@{/admin/pricing}" class="flex items-center w-full px-4 py-2 rounded-lg transition-colors bg-blue-600 text-white">
-            <i data-lucide="tag" class="w-5 h-5"></i>
-            <span class="ml-3">Quản lý Giá</span>
+          <a th:href="@{/admin/pricing}" class="flex items-center w-full px-4 py-2 rounded-lg bg-blue-600 text-white">
+            <i data-lucide="tag" class="w-5 h-5 mr-3"></i>
+            Quản lý Giá
           </a>
-          <a th:href="@{/admin/customers}" class="flex items-center w-full px-4 py-2 rounded-lg transition-colors text-gray-300 hover:bg-gray-700 hover:text-white">
-            <i data-lucide="users" class="w-5 h-5"></i>
-            <span class="ml-3">Khách hàng</span>
+          <a th:href="@{/admin/customers}" class="flex items-center w-full px-4 py-2 rounded-lg hover:bg-gray-700">
+            <i data-lucide="users" class="w-5 h-5 mr-3"></i>
+            Khách hàng
           </a>
-          <a th:href="@{/logout}" class="mt-auto flex items-center w-full px-4 py-2 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white">
+        </nav>
+        <div class="px-4 py-4 border-t border-gray-700">
+          <a th:href="@{/logout}" class="flex items-center w-full px-4 py-2 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white">
             <i data-lucide="log-out" class="w-5 h-5"></i>
             <span class="ml-3">Đăng xuất</span>
           </a>
-        </nav>
+        </div>
       </aside>
 
       <div class="flex-1 flex flex-col overflow-hidden">
-        <header class="bg-white shadow-sm border-b border-gray-200">
-          <div class="flex items-center justify-between h-16 px-6" th:if="${isAuthenticated}">
-            <button class="text-gray-600"><i data-lucide="menu"></i></button>
-            <div class="flex items-center space-x-4">
-              <span class="text-gray-700 font-medium" th:text="'Chào, ' + ${currentUser}">Admin</span>
-            </div>
-          </div>
-        </header>
+        <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
+          <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-1 space-y-6">
+              <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-6">
+                <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                  <i data-lucide="dollar-sign" class="text-green-600 w-5 h-5"></i>
+                  Bảng Giá Cơ Sở
+                </h2>
+                <p class="text-sm text-gray-500 mb-4">Cập nhật giá tiền cho 3 mức giá cố định.</p>
 
-        <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
-          <div class="max-w-7xl mx-auto p-6">
-            <div class="animate-fade-in space-y-6">
-              <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-                <div>
-                  <h2 class="text-3xl font-bold text-gray-800">Quản lý Bảng Giá</h2>
-                  <p class="text-gray-500 mt-1">Thiết lập giá tiền cho các loại khung giờ (Giờ vàng, Giờ thường...)</p>
-                </div>
-                <div class="flex items-center gap-3 w-full md:w-auto">
-                  <div class="relative group w-full md:w-64">
-                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                      <i data-lucide="search" class="w-5 h-5 text-gray-400"></i>
-                    </div>
-                    <input
-                      type="text"
-                      id="searchInput"
-                      onkeyup="searchTable()"
-                      class="block w-full p-2.5 pl-10 text-sm border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="Tìm loại giá..."
-                    />
+                <div class="space-y-4">
+                  <div th:each="type : ${typeSlots}" class="border rounded-lg p-3 bg-gray-50">
+                    <form th:action="@{/admin/pricing/update}" method="post">
+                      <input type="hidden" name="id" th:value="${type.id}" />
+                      <div class="flex justify-between items-center mb-1">
+                        <span class="font-semibold text-gray-700 text-sm" th:text="${type.name}">Mức 1</span>
+                        <span th:if="${typeStat.index == 0}" class="w-2 h-2 rounded-full bg-green-500"></span>
+                        <span th:if="${typeStat.index == 1}" class="w-2 h-2 rounded-full bg-yellow-500"></span>
+                        <span th:if="${typeStat.index == 2}" class="w-2 h-2 rounded-full bg-red-500"></span>
+                      </div>
+                      <div class="flex gap-2 mt-2">
+                        <input
+                          type="number"
+                          name="price"
+                          th:value="${type.price}"
+                          class="w-full px-3 py-1.5 border border-gray-300 rounded text-right font-mono font-bold text-blue-600 text-sm focus:ring-1 focus:ring-blue-500 outline-none"
+                        />
+                        <button type="submit" class="bg-white border border-gray-300 text-gray-600 px-2 rounded hover:bg-gray-100" title="Lưu">
+                          <i data-lucide="save" class="w-4 h-4"></i>
+                        </button>
+                      </div>
+                    </form>
                   </div>
-                  <button
-                    onclick="openModal('add')"
-                    class="flex items-center bg-blue-600 text-white px-4 py-2.5 rounded-lg hover:bg-blue-700 transition shadow-md whitespace-nowrap"
-                  >
-                    <i data-lucide="plus-circle" class="w-5 h-5 mr-2"></i>
-                    Thêm Loại Giá
-                  </button>
                 </div>
               </div>
+            </div>
 
-              <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
-                <div class="overflow-x-auto">
-                  <table class="min-w-full divide-y divide-gray-200" id="pricingTable">
-                    <thead class="bg-gray-50">
-                      <tr>
-                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase">ID</th>
-                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase">Tên Loại Giờ</th>
-                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase">Đơn giá (VNĐ / 1 Slot)</th>
-                        <th class="px-6 py-4 text-right text-xs font-bold text-gray-500 uppercase">Hành động</th>
-                      </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                      <tr th:each="type : ${typeSlots}" class="hover:bg-blue-50/30 transition-colors group">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" th:text="${type.id}">1</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                          <span class="text-sm font-bold text-gray-800" th:text="${type.name}">Giờ Thường</span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                          <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                            <span th:text="${#numbers.formatDecimal(type.price, 0, 'COMMA', 0, 'POINT')}">50,000</span>
-                            đ
-                          </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                          <div class="flex items-center justify-end gap-2">
-                            <button
-                              th:data-id="${type.id}"
-                              th:data-name="${type.name}"
-                              th:data-price="${type.price}"
-                              onclick="openModal('edit', this)"
-                              class="text-indigo-600 hover:text-indigo-900 bg-indigo-50 p-2 rounded-lg"
-                              title="Sửa"
-                            >
-                              <i data-lucide="edit-3" class="w-4 h-4"></i>
-                            </button>
-                            <form th:action="@{/admin/pricing/delete}" method="post" class="inline">
-                              <input type="hidden" name="id" th:value="${type.id}" />
-                              <button
-                                type="submit"
-                                onclick="return confirm('Xóa loại giá này có thể ảnh hưởng đến các Slot đang dùng nó. Tiếp tục?')"
-                                class="text-red-600 hover:text-red-900 bg-red-50 p-2 rounded-lg"
-                                title="Xóa"
-                              >
-                                <i data-lucide="trash-2" class="w-4 h-4"></i>
-                              </button>
-                            </form>
-                          </div>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
+            <div class="lg:col-span-2">
+              <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div class="flex justify-between items-center mb-6">
+                  <div>
+                    <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                      <i data-lucide="calendar-clock" class="text-blue-600"></i>
+                      Cấu hình Khung Giờ
+                    </h2>
+                    <p class="text-sm text-gray-500 mt-1">Chọn mức giá áp dụng cho từng khung giờ trong ngày.</p>
+                  </div>
+                  <button
+                    onclick="document.getElementById('scheduleForm').submit()"
+                    class="bg-blue-600 text-white px-6 py-2.5 rounded-lg font-bold shadow-md hover:bg-blue-700 transition flex items-center gap-2 animate-pulse"
+                  >
+                    <i data-lucide="save" class="w-5 h-5"></i>
+                    Lưu Cấu Hình
+                  </button>
                 </div>
+
+                <form id="scheduleForm" th:action="@{/admin/pricing/configure}" method="post">
+                  <div class="overflow-hidden border rounded-lg">
+                    <table class="min-w-full divide-y divide-gray-200">
+                      <thead class="bg-gray-50">
+                        <tr>
+                          <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-1/3">Khung Giờ</th>
+                          <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-2/3">Chọn Mức Giá Áp Dụng</th>
+                        </tr>
+                      </thead>
+                      <tbody class="bg-white divide-y divide-gray-200">
+                        <tr th:each="slot : ${slots}" class="hover:bg-gray-50 transition">
+                          <td class="px-6 py-3 whitespace-nowrap">
+                            <div class="flex items-center">
+                              <div class="bg-blue-100 text-blue-800 font-mono font-bold px-2.5 py-1 rounded text-sm">
+                                <span th:text="${slot.timeBegin < 10 ? '0'+slot.timeBegin : slot.timeBegin}"></span>
+                                :00 -
+                                <span th:text="${slot.timeEnd < 10 ? '0'+slot.timeEnd : slot.timeEnd}"></span>
+                                :00
+                              </div>
+                            </div>
+                          </td>
+                          <td class="px-6 py-2 whitespace-nowrap">
+                            <select
+                              th:name="'slot_' + ${slot.id}"
+                              class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md border cursor-pointer"
+                              onchange="updateColor(this)"
+                            >
+                              <option
+                                th:each="type, stat : ${typeSlots}"
+                                th:value="${type.id}"
+                                th:text="${type.name} + ' (' + ${#numbers.formatDecimal(type.price, 0, 'COMMA', 0, 'POINT')} + 'đ)'"
+                                th:selected="${slot.typeSlots.id == type.id}"
+                                th:class="'type-' + ${stat.count}"
+                              ></option>
+                            </select>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </form>
               </div>
             </div>
           </div>
@@ -154,112 +165,20 @@
       </div>
     </div>
 
-    <div id="pricingModal" class="fixed inset-0 z-50 hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-      <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity" onclick="closeModal()"></div>
-      <div class="flex min-h-full items-center justify-center p-4">
-        <div class="relative transform overflow-hidden rounded-xl bg-white text-left shadow-2xl transition-all sm:w-full sm:max-w-md">
-          <div class="bg-blue-600 px-4 py-4 sm:px-6 flex justify-between items-center">
-            <h3 class="text-lg font-semibold text-white" id="modalTitle">Thêm Loại Giá Mới</h3>
-            <button onclick="closeModal()" class="text-blue-100 hover:text-white"><i data-lucide="x" class="w-6 h-6"></i></button>
-          </div>
-          <form method="post" th:action="@{/admin/pricing/save}">
-            <div class="px-6 py-6 space-y-4">
-              <input type="hidden" id="typeId" name="id" />
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Tên Loại Giờ</label>
-                <input
-                  type="text"
-                  name="name"
-                  id="typeName"
-                  required
-                  class="mt-1 block w-full rounded-md border-gray-300 border p-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  placeholder="Ví dụ: Giờ Vàng"
-                />
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Đơn giá (VNĐ)</label>
-                <div class="relative mt-1 rounded-md shadow-sm">
-                  <input
-                    type="number"
-                    name="price"
-                    id="typePrice"
-                    required
-                    class="block w-full rounded-md border-gray-300 border p-2 pl-3 pr-12 focus:border-blue-500 focus:ring-blue-500"
-                    placeholder="50000"
-                  />
-                  <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-                    <span class="text-gray-500 sm:text-sm">VND</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="bg-gray-50 px-6 py-3 flex flex-row-reverse">
-              <button
-                type="submit"
-                class="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 sm:ml-3 sm:w-auto"
-              >
-                Lưu
-              </button>
-              <button
-                type="button"
-                onclick="closeModal()"
-                class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
-              >
-                Hủy
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-
     <script>
       lucide.createIcons();
 
-      // Search Logic
-      function searchTable() {
-        let input = document.getElementById("searchInput");
-        let filter = input.value.toUpperCase();
-        let table = document.getElementById("pricingTable");
-        let tr = table.getElementsByTagName("tr");
-
-        for (let i = 1; i < tr.length; i++) {
-          let tdName = tr[i].getElementsByTagName("td")[1];
-          if (tdName) {
-            let txtValue = tdName.textContent || tdName.innerText;
-            if (txtValue.toUpperCase().indexOf(filter) > -1) {
-              tr[i].style.display = "";
-            } else {
-              tr[i].style.display = "none";
-            }
-          }
-        }
+      // Hàm đổi màu select box khi chọn giá trị khác nhau cho trực quan
+      function updateColor(select) {
+        // Logic đổi màu background nhẹ cho select nếu cần (Optionally)
+        // Hiện tại để mặc định trắng cho sạch
       }
 
-      // Modal Logic
-      const modal = document.getElementById("pricingModal");
-      const modalTitle = document.getElementById("modalTitle");
-      const inpId = document.getElementById("typeId");
-      const inpName = document.getElementById("typeName");
-      const inpPrice = document.getElementById("typePrice");
-
-      function openModal(mode, btnElement = null) {
-        modal.classList.remove("hidden");
-        if (mode === "add") {
-          modalTitle.textContent = "Thêm Loại Giá Mới";
-          inpId.value = "";
-          inpName.value = "";
-          inpPrice.value = "";
-        } else {
-          modalTitle.textContent = "Cập Nhật Giá";
-          inpId.value = btnElement.getAttribute("data-id");
-          inpName.value = btnElement.getAttribute("data-name");
-          inpPrice.value = btnElement.getAttribute("data-price");
-        }
-      }
-
-      function closeModal() {
-        modal.classList.add("hidden");
+      // Check params url để hiện thông báo
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has("success")) {
+        alert("Đã lưu cấu hình lịch thành công!");
+        window.history.replaceState({}, document.title, "/admin/pricing");
       }
     </script>
   </body>
