@@ -35,7 +35,14 @@ public class AuthController {
                         HttpSession session) {
 
         User user = userService.findByUserName(username);
+
         if (user != null && user.getPassword().equals(HashUtil.hashPassword(password))) {
+            // Kiểm tra trạng thái
+            if (!"ACTIVE".equals(user.getStatus())) {
+                // Tài khoản bị khóa
+                return "redirect:/login?locked";
+            }
+
             session.setAttribute("user", user);
             session.setAttribute("currentUser", user.getUserName());
             session.setAttribute("role", user.getRole());
@@ -47,6 +54,7 @@ public class AuthController {
             return "redirect:/login?error";
         }
     }
+
 
     // Hiển thị form đăng ký
     @GetMapping("/register")
@@ -60,12 +68,24 @@ public class AuthController {
                            @RequestParam String password,
                            @RequestParam(required = false) String phone,
                            @RequestParam String email,
-                            @RequestParam String fullName) {
+                           @RequestParam String fullName,
+                           Model model) {
 
-        String hashed = HashUtil.hashPassword(password);
-        userService.register(username, hashed, phone, email,fullName);
-        return "redirect:/login";
+        try {
+            String hashed = HashUtil.hashPassword(password);
+            userService.register(username, hashed, phone, email, fullName);
+
+            model.addAttribute("notificationMessage", "Đăng ký thành công!");
+            model.addAttribute("notificationType", "success");
+            return "login"; // chuyển sang trang login sau khi thành công
+        } catch (RuntimeException e) {
+            // Username/email trùng → show message trên form
+            model.addAttribute("notificationMessage", e.getMessage());
+            model.addAttribute("notificationType", "error");
+            return "register"; // quay lại trang đăng ký
+        }
     }
+
 
 
     // Logout

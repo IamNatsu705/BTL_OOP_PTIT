@@ -6,6 +6,7 @@ import btl_oop.btl_oop.Repositories.BillRepository;
 import btl_oop.btl_oop.Repositories.SlotRepository;
 import btl_oop.btl_oop.Repositories.UserRepository;
 import btl_oop.btl_oop.Repositories.TypeSlotRepository;
+import btl_oop.btl_oop.Utils.HashUtil;
 import lombok.RequiredArgsConstructor;
 
 import java.util.*;
@@ -20,7 +21,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 @RequiredArgsConstructor
 public class AdminController {
@@ -141,4 +142,91 @@ public class AdminController {
         model.addAttribute("customers", userRepo.findAll());
         return "admin-customers";
     }
+    @PostMapping("/admin/customers/delete")
+    public String deleteCustomer(@RequestParam Long id, RedirectAttributes redirectAttrs) {
+        // Kiểm tra khách hàng tồn tại
+        if(userRepo.existsById(id)) {
+            userRepo.deleteById(id);
+            redirectAttrs.addFlashAttribute("notificationMessage", "Xóa khách hàng thành công!");
+            redirectAttrs.addFlashAttribute("notificationType", "success");
+        } else {
+            redirectAttrs.addFlashAttribute("notificationMessage", "Khách hàng không tồn tại!");
+            redirectAttrs.addFlashAttribute("notificationType", "error");
+        }
+        return "redirect:/admin/customers";
+    }
+    @PostMapping("/admin/customers/save")
+    public String saveCustomer(@RequestParam(required = false) Long userId,
+                               @RequestParam String fullName,
+                               @RequestParam String userName,
+                               @RequestParam String email,
+                               @RequestParam(required = false) String phone,
+                               @RequestParam(required = false) String password,
+                               RedirectAttributes redirectAttrs) {
+
+        if (userId == null) {
+            // Thêm mới
+            User newUser = new User();
+            newUser.setFullName(fullName);
+            newUser.setUserName(userName);
+            newUser.setEmail(email);
+            newUser.setPhone(phone);
+            if (password == null || password.isEmpty()) {
+                newUser.setPassword(HashUtil.hashPassword("123456")); // mặc định 123456
+            } else {
+                newUser.setPassword(HashUtil.hashPassword(password));
+            }
+            newUser.setStatus("ACTIVE");
+            newUser.setRole("USER");
+            userRepo.save(newUser);
+
+            redirectAttrs.addFlashAttribute("notificationMessage", "Thêm khách hàng thành công!");
+            redirectAttrs.addFlashAttribute("notificationType", "success");
+        } else {
+            // Cập nhật
+            Optional<User> optUser = userRepo.findById(userId);
+            if (optUser.isPresent()) {
+                User user = optUser.get();
+                user.setFullName(fullName);
+                user.setEmail(email);
+                user.setPhone(phone);
+                if (password != null && !password.isEmpty()) {
+                    user.setPassword(HashUtil.hashPassword(password));
+                }
+                userRepo.save(user);
+
+                redirectAttrs.addFlashAttribute("notificationMessage", "Cập nhật khách hàng thành công!");
+                redirectAttrs.addFlashAttribute("notificationType", "success");
+            } else {
+                redirectAttrs.addFlashAttribute("notificationMessage", "Không tìm thấy khách hàng!");
+                redirectAttrs.addFlashAttribute("notificationType", "error");
+            }
+        }
+
+        return "redirect:/admin/customers";
+    }
+    @PostMapping("/admin/customers/lock")
+    public String lockOrUnlockCustomer(@RequestParam Long id, RedirectAttributes redirectAttrs) {
+        Optional<User> optUser = userRepo.findById(id);
+        if (optUser.isPresent()) {
+            User user = optUser.get();
+            if ("ACTIVE".equals(user.getStatus())) {
+                user.setStatus("LOCKED");
+                redirectAttrs.addFlashAttribute("notificationMessage", "Đã khóa tài khoản: " + user.getFullName());
+                redirectAttrs.addFlashAttribute("notificationType", "success");
+            } else {
+                user.setStatus("ACTIVE");
+                redirectAttrs.addFlashAttribute("notificationMessage", "Đã mở khóa tài khoản: " + user.getFullName());
+                redirectAttrs.addFlashAttribute("notificationType", "success");
+            }
+            userRepo.save(user);
+        } else {
+            redirectAttrs.addFlashAttribute("notificationMessage", "Không tìm thấy khách hàng!");
+            redirectAttrs.addFlashAttribute("notificationType", "error");
+        }
+
+        return "redirect:/admin/customers";
+    }
+
+
 }
