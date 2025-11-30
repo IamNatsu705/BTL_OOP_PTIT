@@ -86,12 +86,12 @@ public class DatabaseSeeder implements CommandLineRunner {
     // 2. Tạo 6 Sân
     private void seedCourts() {
         List<Court> courts = new ArrayList<>();
-        courts.add(createCourt("Sân 1 (VIP Gỗ)", "Hoạt động", "Sàn gỗ nhập khẩu, ánh sáng chuẩn thi đấu."));
-        courts.add(createCourt("Sân 2 (Thảm Xịn)", "Hoạt động", "Thảm Yonex độ nảy tốt."));
-        courts.add(createCourt("Sân 3 (Thường)", "Hoạt động", "Sân tiêu chuẩn tập luyện."));
-        courts.add(createCourt("Sân 4 (Thường)", "Hoạt động", "Sân tiêu chuẩn tập luyện."));
-        courts.add(createCourt("Sân 5 (Ngoài trời)", "Bảo trì", "Đang sửa mái che."));
-        courts.add(createCourt("Sân 6 (VIP 2)", "Hoạt động", "Khu vực riêng tư, có điều hòa."));
+        courts.add(createCourt("Sân 1 (VIP Gỗ)", "available", "Sàn gỗ nhập khẩu, ánh sáng chuẩn thi đấu."));
+        courts.add(createCourt("Sân 2 (Thảm Xịn)", "available", "Thảm Yonex độ nảy tốt."));
+        courts.add(createCourt("Sân 3 (Thường)", "available", "Sân tiêu chuẩn tập luyện."));
+        courts.add(createCourt("Sân 4 (Thường)", "available", "Sân tiêu chuẩn tập luyện."));
+        courts.add(createCourt("Sân 5 (Ngoài trời)", "maintenance", "Đang sửa mái che."));
+        courts.add(createCourt("Sân 6 (VIP 2)", "available", "Khu vực riêng tư, có điều hòa."));
         courtRepo.saveAll(courts);
     }
 

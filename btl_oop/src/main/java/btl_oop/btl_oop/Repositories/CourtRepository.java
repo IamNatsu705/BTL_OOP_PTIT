@@ -7,5 +7,5 @@ import btl_oop.btl_oop.Models.Court;
 
 @Repository
 public interface CourtRepository extends JpaRepository<Court, Long>{
-    
+    Long countByStatus(String status);
 }
