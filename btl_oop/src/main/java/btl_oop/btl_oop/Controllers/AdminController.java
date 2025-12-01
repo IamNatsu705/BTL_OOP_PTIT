@@ -29,8 +29,7 @@ public class AdminController {
     public String adminOverview(Model model) {
         // 1. Thống kê KHÁCH HÀNG
         long totalCustomers = userRepo.count();
-        
-        // 2. Thống kê ĐƠN HÀNG & DOANH THU
+
         List<Bill> allBills = billRepo.findAll();
         
         // Tính doanh thu tổng (hoặc tháng này nếu muốn query kỹ hơn)
