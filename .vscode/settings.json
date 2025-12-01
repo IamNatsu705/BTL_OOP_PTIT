@@ -1,5 +1,6 @@
 {
   "html.format.wrapAttributes": "preserve",
   "html.format.extraLiners": [],
-  "java.compile.nullAnalysis.mode": "automatic"
+  "java.compile.nullAnalysis.mode": "automatic",
+  "java.configuration.updateBuildConfiguration": "interactive"
 }

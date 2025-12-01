@@ -31,6 +31,10 @@ public class CourtSlotService {
         return slotRepo.findAll();
     }
 
+    public Long getCourtAvailable(){
+        return courtRepo.countByStatus("available");
+    }
+
     // Hàm quan trọng: Tìm xem sân này ngày hôm nay CÒN TRỐNG những giờ nào?
     public List<Slot> getAvailableSlots(Long courtId, LocalDate date) {
         // 1. Lấy tất cả các slot gốc (Ví dụ: 7h-8h, 8h-9h...)

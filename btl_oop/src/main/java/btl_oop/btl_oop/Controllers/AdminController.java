@@ -7,8 +7,13 @@ import btl_oop.btl_oop.Repositories.SlotRepository;
 import btl_oop.btl_oop.Repositories.UserRepository;
 import btl_oop.btl_oop.Repositories.TypeSlotRepository;
 import lombok.RequiredArgsConstructor;
+
 import java.util.*;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.stream.Collectors;
+
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -42,15 +47,18 @@ public class AdminController {
         // 3. Thống kê HÔM NAY (Giả định đơn giản)
         // Để chính xác cần viết Query trong Repository: findByDate...
         // Ở đây mình lấy ví dụ số liệu mẫu hoặc tính sơ bộ
-        long todayBookings = 5; // Ví dụ: Cần query DB đếm số bill created_at hôm nay
-        BigDecimal todayRevenue = new BigDecimal("250000"); 
-
+        LocalDateTime start = LocalDate.now().atStartOfDay();
+        LocalDateTime end   = LocalDate.now().atTime(23, 59, 59);
+        long todayBookings = billRepo.findByCreatedAtBetween(start, end).size(); // Ví dụ: Cần query DB đếm số bill created_at hôm nay
+        List<BigDecimal> todayRevenues = billRepo.findByCreatedAtBetween(start, end).stream().map(Bill::getTotalAmount).collect(Collectors.toList()); 
+        BigDecimal todayRevenue = new BigDecimal("0");
+        for (BigDecimal x: todayRevenues) todayRevenue = todayRevenue.add(x);
         // 4. Trạng thái SÂN NGAY LÚC NÀY (Real-time)
         // Logic: Lấy giờ hiện tại -> Check xem bao nhiêu sân đang có khách
         // (Tạm thời hardcode hoặc gọi service check)
-        int courtsOccupied = 2; 
-        int totalCourts = 6;
-
+        long courtsOccupied = courtSlotService.getCourtAvailable(); 
+        long totalCourts = courtSlotService.getAllCourts().size();
+        List<Court> courts = courtSlotService.getAllCourts();
         // Gửi sang View
         model.addAttribute("totalCustomers", totalCustomers);
         model.addAttribute("totalBookings", totalBookings);
@@ -59,8 +67,8 @@ public class AdminController {
         model.addAttribute("todayBookings", todayBookings);
         model.addAttribute("todayRevenue", todayRevenue);
         
-        model.addAttribute("courtsOccupied", courtsOccupied);
-        model.addAttribute("totalCourts", totalCourts);
+        model.addAttribute("courts", courts);
+
 
         return "admin-overview";
     }
