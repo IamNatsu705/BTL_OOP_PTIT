@@ -81,14 +81,17 @@
     </main>
 
     <footer class="bg-gray-800 text-gray-300 mt-16"></footer>
+    <div th:if="${notificationMessage != null or param.locked != null}"
+         th:classappend="${notificationType == 'success'} ? 'bg-green-500' : (${notificationType == 'error'} ? 'bg-red-500' : 'bg-blue-500')"
+         class="fixed bottom-5 right-5 p-4 rounded-lg shadow-lg text-white z-50">
 
-    <div
-      th:if="${notificationMessage}"
-      th:classappend="${notificationType == 'success'} ? 'bg-green-500' : (${notificationType == 'error'} ? 'bg-red-500' : 'bg-blue-500')"
-      class="fixed bottom-5 right-5 p-4 rounded-lg shadow-lg text-white z-50"
-    >
-      <p th:text="${notificationMessage}"></p>
+      <p th:if="${notificationMessage != null}" th:text="${notificationMessage}"></p>
+      <p th:if="${param.locked != null}" class="text-red-100">
+        Tài khoản của bạn đã bị khóa. Liên hệ quản trị viên.
+      </p>
     </div>
+
+
 
     <script>
       lucide.createIcons();
