@@ -29,8 +29,13 @@ public class BookingController {
     // 2. API Lấy danh sách Slot ĐÃ ĐẶT (Sửa lại logic chỗ này)
     @GetMapping("/slots/booked")
     public ResponseEntity<List<CourtSlotService.SlotBookedDTO>> getBookedSlots(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        return ResponseEntity.ok(courtSlotService.getSlotBooked(date));
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            HttpSession session) {
+        
+        String currentRole = (String) session.getAttribute("role");
+        boolean isAdmin = "admin".equalsIgnoreCase(currentRole);
+        List<CourtSlotService.SlotBookedDTO> res=courtSlotService.getSlotBooked(date,isAdmin);
+        return ResponseEntity.ok(res);
     }
 
     // 3. API Tạo đơn đặt sân

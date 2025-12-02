@@ -35,24 +35,6 @@ public class CourtSlotService {
         return courtRepo.countByStatus("available");
     }
 
-    // Hàm quan trọng: Tìm xem sân này ngày hôm nay CÒN TRỐNG những giờ nào?
-    public List<Slot> getAvailableSlots(Long courtId, LocalDate date) {
-        // 1. Lấy tất cả các slot gốc (Ví dụ: 7h-8h, 8h-9h...)
-        List<Slot> allSlots = slotRepo.findAll();
-
-        // 2. Lấy danh sách các slot ĐÃ BỊ ĐẶT (Booking) ngày hôm đó tại sân đó
-        List<SlotBooked> bookedList = slotBookedRepo.findByBookingDateAndCourtId(date, courtId);
-        
-        // Lấy da danh sách ID của các slot đã bị đặt
-        List<Long> bookedSlotIds = bookedList.stream()
-                .map(sb -> sb.getSlot().getId()) // Giả sử SlotBooked có quan hệ getSlot()
-                .collect(Collectors.toList());
-
-        // 3. Lọc ra những slot chưa bị đặt
-        return allSlots.stream()
-                .filter(slot -> !bookedSlotIds.contains(slot.getId()))
-                .collect(Collectors.toList());
-    }
     // lấy giá tiền
     public record SlotPriceDTO(Long courtId, String courtName, Long slotId, String timeFrame, BigDecimal price) {}
     public List<SlotPriceDTO> getSlotPrices(LocalDate date) {
@@ -70,23 +52,33 @@ public class CourtSlotService {
     // lấy slotcourt đã có người đặt trong ngày
     public record SlotBookedDTO(Long courId, Long slotId, BigDecimal price, String fullName, String phone){};
 
-    public List<SlotBookedDTO> getSlotBooked(LocalDate date) {
+    public List<SlotBookedDTO> getSlotBooked(LocalDate date, boolean isAdmin) {
         List<SlotBooked> slotBooked = slotBookedRepo.findByBookingDate(date);
         List<SlotBookedDTO> slotBookedDTO = new ArrayList<>();
         
         for (SlotBooked sb : slotBooked) {
-            // Lấy User từ hóa đơn
             User user = sb.getBill().getUser();
-            
-            // 2. Map thêm số điện thoại vào DTO
-            SlotBookedDTO dto = new SlotBookedDTO(
-                sb.getCourt().getId(), 
-                sb.getSlot().getId(), 
-                sb.getPrice(), 
-                user.getFullName(), // Lấy tên đầy đủ
-                user.getPhone()     // Lấy số điện thoại
-            );
-            slotBookedDTO.add(dto);
+
+            if(isAdmin){
+                SlotBookedDTO dto = new SlotBookedDTO(
+                    sb.getCourt().getId(), 
+                    sb.getSlot().getId(), 
+                    sb.getPrice(), 
+                    user.getFullName(),
+                    user.getPhone()
+                );
+                slotBookedDTO.add(dto);
+            }
+            else{
+                SlotBookedDTO dto = new SlotBookedDTO(
+                    sb.getCourt().getId(), 
+                    sb.getSlot().getId(), 
+                    sb.getPrice(), 
+                    "Đã đặt",
+                    "123"
+                );
+                slotBookedDTO.add(dto);
+            }
         }
         return slotBookedDTO; 
     }

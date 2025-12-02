@@ -41,7 +41,6 @@ public class User {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    // Quan hệ
     @OneToMany(mappedBy = "user") 
     @JsonIgnore
     private List<Bill> bills; 

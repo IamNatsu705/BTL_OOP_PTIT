@@ -6,178 +6,146 @@
     <title>Admin - Cấu hình Giá</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-    <style>
-      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap");
-      body {
-        font-family: "Inter", sans-serif;
-      }
-      /* Style cho select option để dễ nhìn */
-      option.type-1 {
-        background-color: #f0fdf4;
-        color: #166534;
-      } /* Xanh lá nhẹ */
-      option.type-2 {
-        background-color: #fffbeb;
-        color: #92400e;
-        font-weight: bold;
-      } /* Vàng đậm */
-      option.type-3 {
-        background-color: #fef2f2;
-        color: #991b1b;
-        font-weight: bold;
-      } /* Đỏ đậm */
-    </style>
   </head>
-  <body class="bg-gray-100">
-    <div class="flex h-screen">
-      <aside class="bg-gray-800 text-gray-300 w-64 flex flex-col flex-shrink-0">
-        <div class="flex items-center justify-center h-16 border-b border-gray-700">
-          <span class="text-xl font-bold text-white">Quản Trị</span>
+  <body class="bg-gray-100 text-gray-800 font-sans h-screen flex overflow-hidden">
+    <aside class="bg-gray-800 text-gray-300 w-64 transition-all duration-300 flex flex-col flex-shrink-0">
+      <div class="flex items-center justify-center h-16 border-b border-gray-700 gap-3">
+        <i data-lucide="shield-check" class="w-6 h-6 text-blue-500"></i>
+        <span class="text-xl font-bold text-white tracking-wide">Quản Trị</span>
+      </div>
+      <nav class="flex-1 px-4 py-6 space-y-2">
+        <a th:href="@{/admin}" class="flex items-center w-full px-4 py-2 rounded-lg transition-colors text-gray-300 hover:bg-gray-700 hover:text-white">
+          <i data-lucide="bar-chart-2" class="w-5 h-5"></i>
+          <span class="ml-3">Tổng quan</span>
+        </a>
+        <a th:href="@{/admin/courts}" class="flex items-center w-full px-4 py-2 rounded-lg transition-colors text-gray-300 hover:bg-gray-700 hover:text-white">
+          <i data-lucide="calendar" class="w-5 h-5"></i>
+          <span class="ml-3">Quản lý Lịch Sân</span>
+        </a>
+        <a th:href="@{/admin/pricing}" class="flex items-center w-full px-4 py-2 rounded-lg transition-colors bg-blue-600 text-white">
+          <i data-lucide="tag" class="w-5 h-5"></i>
+          <span class="ml-3">Quản lý Giá</span>
+        </a>
+        <a th:href="@{/admin/customers}" class="flex items-center w-full px-4 py-2 rounded-lg transition-colors text-gray-300 hover:bg-gray-700 hover:text-white">
+          <i data-lucide="users" class="w-5 h-5"></i>
+          <span class="ml-3">Khách hàng</span>
+        </a>
+      </nav>
+      <div class="px-4 py-4 border-t border-gray-700">
+        <a th:href="@{/logout}" class="flex items-center w-full px-4 py-2 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white">
+          <i data-lucide="log-out" class="w-5 h-5"></i>
+          <span class="ml-3">Đăng xuất</span>
+        </a>
+      </div>
+    </aside>
+
+    <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <header class="bg-white shadow-sm border-b border-gray-200 h-16 flex-shrink-0">
+        <div class="flex items-center justify-between h-full px-6" th:if="${isAuthenticated}">
+          <button class="text-gray-600"><i data-lucide="menu"></i></button>
+          <div class="flex items-center space-x-4">
+            <span class="text-gray-700 font-medium" th:text="'Chào, ' + ${currentUser}">Admin</span>
+          </div>
         </div>
-        <nav class="flex-1 px-4 py-6 space-y-2">
-          <a th:href="@{/admin}" class="flex items-center w-full px-4 py-2 rounded-lg hover:bg-gray-700">
-            <i data-lucide="bar-chart-2" class="w-5 h-5 mr-3"></i>
-            Tổng quan
-          </a>
-          <a th:href="@{/admin/courts}" class="flex items-center w-full px-4 py-2 rounded-lg hover:bg-gray-700">
-            <i data-lucide="calendar" class="w-5 h-5 mr-3"></i>
-            Lịch Sân
-          </a>
-          <a th:href="@{/admin/pricing}" class="flex items-center w-full px-4 py-2 rounded-lg bg-blue-600 text-white">
-            <i data-lucide="tag" class="w-5 h-5 mr-3"></i>
-            Quản lý Giá
-          </a>
-          <a th:href="@{/admin/customers}" class="flex items-center w-full px-4 py-2 rounded-lg hover:bg-gray-700">
-            <i data-lucide="users" class="w-5 h-5 mr-3"></i>
-            Khách hàng
-          </a>
-        </nav>
-        <div class="px-4 py-4 border-t border-gray-700">
-          <a th:href="@{/logout}" class="flex items-center w-full px-4 py-2 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white">
-            <i data-lucide="log-out" class="w-5 h-5"></i>
-            <span class="ml-3">Đăng xuất</span>
-          </a>
-        </div>
-      </aside>
+      </header>
 
-      <div class="flex-1 flex flex-col overflow-hidden">
-        <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
-          <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div class="lg:col-span-1 space-y-6">
-              <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-6">
-                <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-                  <i data-lucide="dollar-sign" class="text-green-600 w-5 h-5"></i>
-                  Bảng Giá Cơ Sở
-                </h2>
-                <p class="text-sm text-gray-500 mb-4">Cập nhật giá tiền cho 3 mức giá cố định.</p>
+      <main class="flex-1 flex flex-col p-6 overflow-hidden bg-gray-100">
+        <div class="flex flex-col md:flex-row gap-6 h-full overflow-hidden">
+          <div class="w-full md:w-1/3 flex flex-col gap-4">
+            <div class="bg-white p-4 rounded border border-gray-200 shadow-sm">
+              <h3 class="font-bold text-lg mb-2 flex items-center gap-2 text-gray-800">
+                <i data-lucide="settings" class="w-5 h-5 text-gray-500"></i>
+                Các mức giá
+              </h3>
+              <p class="text-sm text-gray-500 mb-4">Định nghĩa giá tiền cho từng loại (Thường, VIP...).</p>
 
-                <div class="space-y-4">
-                  <div th:each="type : ${typeSlots}" class="border rounded-lg p-3 bg-gray-50">
-                    <form th:action="@{/admin/pricing/update}" method="post">
-                      <input type="hidden" name="id" th:value="${type.id}" />
-                      <div class="flex justify-between items-center mb-1">
-                        <span class="font-semibold text-gray-700 text-sm" th:text="${type.name}">Mức 1</span>
-                        <span th:if="${typeStat.index == 0}" class="w-2 h-2 rounded-full bg-green-500"></span>
-                        <span th:if="${typeStat.index == 1}" class="w-2 h-2 rounded-full bg-yellow-500"></span>
-                        <span th:if="${typeStat.index == 2}" class="w-2 h-2 rounded-full bg-red-500"></span>
-                      </div>
-                      <div class="flex gap-2 mt-2">
-                        <input
-                          type="number"
-                          name="price"
-                          th:value="${type.price}"
-                          class="w-full px-3 py-1.5 border border-gray-300 rounded text-right font-mono font-bold text-blue-600 text-sm focus:ring-1 focus:ring-blue-500 outline-none"
-                        />
-                        <button type="submit" class="bg-white border border-gray-300 text-gray-600 px-2 rounded hover:bg-gray-100" title="Lưu">
-                          <i data-lucide="save" class="w-4 h-4"></i>
-                        </button>
-                      </div>
-                    </form>
-                  </div>
+              <div class="space-y-3">
+                <div th:each="type : ${typeSlots}" class="p-3 bg-gray-50 border border-gray-200 rounded">
+                  <form th:action="@{/admin/pricing/update}" method="post" class="flex flex-col gap-2">
+                    <input type="hidden" name="id" th:value="${type.id}" />
+
+                    <div class="flex justify-between font-bold text-sm text-gray-700">
+                      <span th:text="${type.name}">Tên Loại</span>
+                    </div>
+
+                    <div class="flex gap-2">
+                      <input
+                        type="number"
+                        name="price"
+                        th:value="${type.price}"
+                        class="w-full border border-gray-300 p-2 rounded text-right font-mono text-blue-700 font-bold focus:border-blue-500 outline-none"
+                        required
+                      />
+                      <button type="submit" class="px-3 bg-white border border-gray-300 rounded hover:bg-gray-100 text-blue-600" title="Lưu">
+                        <i data-lucide="save" class="w-4 h-4"></i>
+                      </button>
+                    </div>
+                  </form>
                 </div>
-              </div>
-            </div>
-
-            <div class="lg:col-span-2">
-              <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <div class="flex justify-between items-center mb-6">
-                  <div>
-                    <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
-                      <i data-lucide="calendar-clock" class="text-blue-600"></i>
-                      Cấu hình Khung Giờ
-                    </h2>
-                    <p class="text-sm text-gray-500 mt-1">Chọn mức giá áp dụng cho từng khung giờ trong ngày.</p>
-                  </div>
-                  <button
-                    onclick="document.getElementById('scheduleForm').submit()"
-                    class="bg-blue-600 text-white px-6 py-2.5 rounded-lg font-bold shadow-md hover:bg-blue-700 transition flex items-center gap-2 animate-pulse"
-                  >
-                    <i data-lucide="save" class="w-5 h-5"></i>
-                    Lưu Cấu Hình
-                  </button>
-                </div>
-
-                <form id="scheduleForm" th:action="@{/admin/pricing/configure}" method="post">
-                  <div class="overflow-hidden border rounded-lg">
-                    <table class="min-w-full divide-y divide-gray-200">
-                      <thead class="bg-gray-50">
-                        <tr>
-                          <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-1/3">Khung Giờ</th>
-                          <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-2/3">Chọn Mức Giá Áp Dụng</th>
-                        </tr>
-                      </thead>
-                      <tbody class="bg-white divide-y divide-gray-200">
-                        <tr th:each="slot : ${slots}" class="hover:bg-gray-50 transition">
-                          <td class="px-6 py-3 whitespace-nowrap">
-                            <div class="flex items-center">
-                              <div class="bg-blue-100 text-blue-800 font-mono font-bold px-2.5 py-1 rounded text-sm">
-                                <span th:text="${slot.timeBegin < 10 ? '0'+slot.timeBegin : slot.timeBegin}"></span>
-                                :00 -
-                                <span th:text="${slot.timeEnd < 10 ? '0'+slot.timeEnd : slot.timeEnd}"></span>
-                                :00
-                              </div>
-                            </div>
-                          </td>
-                          <td class="px-6 py-2 whitespace-nowrap">
-                            <select
-                              th:name="'slot_' + ${slot.id}"
-                              class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md border cursor-pointer"
-                              onchange="updateColor(this)"
-                            >
-                              <option
-                                th:each="type, stat : ${typeSlots}"
-                                th:value="${type.id}"
-                                th:text="${type.name} + ' (' + ${#numbers.formatDecimal(type.price, 0, 'COMMA', 0, 'POINT')} + 'đ)'"
-                                th:selected="${slot.typeSlots.id == type.id}"
-                                th:class="'type-' + ${stat.count}"
-                              ></option>
-                            </select>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </form>
               </div>
             </div>
           </div>
-        </main>
-      </div>
+
+          <div class="w-full md:w-2/3 flex flex-col bg-white border border-gray-200 rounded shadow-sm overflow-hidden">
+            <div class="p-4 border-b border-gray-200 flex justify-between items-center bg-gray-50">
+              <div>
+                <h3 class="font-bold text-lg text-gray-800">Cấu hình Khung giờ</h3>
+                <p class="text-xs text-gray-500">Gán mức giá cho từng giờ trong ngày</p>
+              </div>
+              <button
+                onclick="document.getElementById('scheduleForm').submit()"
+                class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 font-bold text-sm flex items-center gap-2 shadow-sm"
+              >
+                <i data-lucide="check-circle" class="w-4 h-4"></i>
+                Lưu cấu hình
+              </button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-0">
+              <form id="scheduleForm" th:action="@{/admin/pricing/configure}" method="post">
+                <table class="w-full text-left border-collapse text-sm">
+                  <thead class="bg-gray-100 sticky top-0 z-10 text-gray-600 uppercase text-xs">
+                    <tr>
+                      <th class="px-6 py-3 border-b border-gray-200">Khung giờ</th>
+                      <th class="px-6 py-3 border-b border-gray-200">Mức giá áp dụng</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-gray-100">
+                    <tr th:each="slot : ${slots}" class="hover:bg-gray-50">
+                      <td class="px-6 py-3 font-mono font-bold text-gray-700">
+                        <span th:text="${slot.timeBegin < 10 ? '0'+slot.timeBegin : slot.timeBegin}"></span>
+                        :00 -
+                        <span th:text="${slot.timeEnd < 10 ? '0'+slot.timeEnd : slot.timeEnd}"></span>
+                        :00
+                      </td>
+                      <td class="px-6 py-2">
+                        <select th:name="'slot_' + ${slot.id}" class="w-full border border-gray-300 rounded p-2 bg-white focus:border-blue-500 outline-none cursor-pointer">
+                          <option
+                            th:each="type : ${typeSlots}"
+                            th:value="${type.id}"
+                            th:text="${type.name} + ' - ' + ${#numbers.formatDecimal(type.price, 0, 'COMMA', 0, 'POINT')} + ' đ'"
+                            th:selected="${slot.typeSlots.id == type.id}"
+                          ></option>
+                        </select>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </form>
+            </div>
+          </div>
+        </div>
+      </main>
     </div>
 
     <script>
       lucide.createIcons();
 
-      // Hàm đổi màu select box khi chọn giá trị khác nhau cho trực quan
-      function updateColor(select) {
-        // Logic đổi màu background nhẹ cho select nếu cần (Optionally)
-        // Hiện tại để mặc định trắng cho sạch
-      }
-
-      // Check params url để hiện thông báo
+      // Hiển thị thông báo khi URL có ?success
       const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.has("success")) {
-        alert("Đã lưu cấu hình lịch thành công!");
+        alert("Đã lưu cấu hình thành công!");
+        // Xóa param trên url để F5 không hiện lại
         window.history.replaceState({}, document.title, "/admin/pricing");
       }
     </script>

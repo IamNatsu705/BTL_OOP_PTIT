@@ -16,15 +16,11 @@ public class Court {
     private Long id;
 
     @Column(nullable = false)
-    private String name; // Ví dụ: "Sân 1", "Sân 2"
+    private String name;
 
     private String status;
 
     private String description;
-
-    // --- Relationships ---
-
-    // Một Sân (Court) có thể có nhiều lượt đặt (SlotBooked)
     @OneToMany(mappedBy = "court")
     private Set<SlotBooked> bookings;
 }

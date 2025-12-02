@@ -31,12 +31,11 @@ public class CustomerController {
         }
 
         List<Bill> historyBills = bookingService.getHistoryByUserId(currentUser.getUserId());
-        // Write a service return bills{ bill.id, bill.totatalAmount, bill.createdAt, slotBookedList{court.name, bookingDate, slot.name, price}}
         model.addAttribute("bills", historyBills); 
         return "user_history";
     }
 
-    // --- CÁC PHẦN PROFILE GIỮ NGUYÊN (Chỉ chỉnh lại import nếu cần) ---
+
     
     @GetMapping("/profile")
     public String profilePage(HttpSession session, Model model) {

@@ -16,7 +16,7 @@ public class Slot {
     @Column(name = "slot_id")
     private Long id;
 
-    private String name; // Ví dụ: "Sáng sớm", "Tối"
+    private String name;
 
     @Column(name = "time_begin")
     private int timeBegin;
@@ -24,14 +24,10 @@ public class Slot {
     @Column(name = "time_end")
     private int timeEnd;
 
-    // --- Relationships ---
-
-    // Nhiều Slots có thể thuộc về một TypeSlots
     @ManyToOne
-    @JoinColumn(name = "type_id", nullable = false) // 'type_id' là tên cột khóa ngoại
+    @JoinColumn(name = "type_id", nullable = false)
     private TypeSlots typeSlots;
 
-    // Một Slot có thể được đặt trong nhiều lượt (SlotBooked)
     @OneToMany(mappedBy = "slot")
     private Set<SlotBooked> bookings;
 }

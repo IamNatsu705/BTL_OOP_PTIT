@@ -9,9 +9,6 @@ import java.time.LocalDateTime;
 
 @Repository
 public interface BillRepository extends JpaRepository<Bill, Long> {
-    
-    // Tìm tất cả hóa đơn của một User (Để xem lịch sử giao dịch)
-    // Spring Data JPA tự động hiểu: tìm field 'user', bên trong user tìm field 'userId'
     List<Bill> findByUserUserId(Long userId);
     List<Bill> findByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
 }

@@ -6,346 +6,234 @@
     <title>Admin - Quản lý Khách hàng</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-    <style>
-      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap");
-      body {
-        font-family: "Inter", sans-serif;
-      }
-      @keyframes fade-in {
-        from {
-          opacity: 0;
-        }
-        to {
-          opacity: 1;
-        }
-      }
-      .animate-fade-in {
-        animation: fade-in 0.5s ease-out;
-      }
-    </style>
   </head>
-  <body class="bg-gray-100">
-    <div class="flex h-screen">
-      <aside class="bg-gray-800 text-gray-300 w-64 transition-all duration-300 flex flex-col flex-shrink-0">
-        <div class="flex items-center justify-center h-16 border-b border-gray-700">
-          <span class="text-xl font-bold text-white">Quản Trị</span>
+  <body class="bg-gray-100 text-gray-800 font-sans h-screen flex overflow-hidden">
+    <aside class="bg-gray-800 text-gray-300 w-64 transition-all duration-300 flex flex-col flex-shrink-0">
+      <div class="flex items-center justify-center h-16 border-b border-gray-700 gap-3">
+        <i data-lucide="shield-check" class="w-6 h-6 text-blue-500"></i>
+        <span class="text-xl font-bold text-white tracking-wide">Quản Trị</span>
+      </div>
+      <nav class="flex-1 px-4 py-6 space-y-2">
+        <a th:href="@{/admin}" class="flex items-center w-full px-4 py-2 rounded-lg transition-colors text-gray-300 hover:bg-gray-700 hover:text-white">
+          <i data-lucide="bar-chart-2" class="w-5 h-5"></i>
+          <span class="ml-3">Tổng quan</span>
+        </a>
+        <a th:href="@{/admin/courts}" class="flex items-center w-full px-4 py-2 rounded-lg transition-colors text-gray-300 hover:bg-gray-700 hover:text-white">
+          <i data-lucide="calendar" class="w-5 h-5"></i>
+          <span class="ml-3">Quản lý Lịch Sân</span>
+        </a>
+        <a th:href="@{/admin/pricing}" class="flex items-center w-full px-4 py-2 rounded-lg transition-colors text-gray-300 hover:bg-gray-700 hover:text-white">
+          <i data-lucide="tag" class="w-5 h-5"></i>
+          <span class="ml-3">Quản lý Giá</span>
+        </a>
+        <a th:href="@{/admin/customers}" class="flex items-center w-full px-4 py-2 rounded-lg transition-colors bg-blue-600 text-white">
+          <i data-lucide="users" class="w-5 h-5"></i>
+          <span class="ml-3">Khách hàng</span>
+        </a>
+      </nav>
+      <div class="px-4 py-4 border-t border-gray-700">
+        <a th:href="@{/logout}" class="flex items-center w-full px-4 py-2 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white">
+          <i data-lucide="log-out" class="w-5 h-5"></i>
+          <span class="ml-3">Đăng xuất</span>
+        </a>
+      </div>
+    </aside>
+
+    <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <header class="bg-white shadow-sm border-b border-gray-200 h-16 flex-shrink-0">
+        <div class="flex items-center justify-between h-full px-6" th:if="${isAuthenticated}">
+          <button class="text-gray-600"><i data-lucide="menu"></i></button>
+          <div class="flex items-center space-x-4">
+            <span class="text-gray-700 font-medium" th:text="'Chào, ' + ${currentUser}">Admin</span>
+          </div>
         </div>
-        <nav class="flex-1 px-4 py-6 space-y-2">
-          <a th:href="@{/admin}" class="flex items-center w-full px-4 py-2 rounded-lg transition-colors text-gray-300 hover:bg-gray-700 hover:text-white">
-            <i data-lucide="bar-chart-2" class="w-5 h-5"></i>
-            <span class="ml-3">Tổng quan</span>
-          </a>
-          <a th:href="@{/admin/courts}" class="flex items-center w-full px-4 py-2 rounded-lg transition-colors text-gray-300 hover:bg-gray-700 hover:text-white">
-            <i data-lucide="settings" class="w-5 h-5"></i>
-            <span class="ml-3">Quản lý Sân</span>
-          </a>
-          <a th:href="@{/admin/pricing}" class="flex items-center w-full px-4 py-2 rounded-lg transition-colors text-gray-300 hover:bg-gray-700 hover:text-white">
-            <i data-lucide="tag" class="w-5 h-5"></i>
-            <span class="ml-3">Quản lý Giá</span>
-          </a>
-          <!-- <a href="#" class="flex items-center w-full px-4 py-2 rounded-lg transition-colors text-gray-300 hover:bg-gray-700 hover:text-white">
-            <i data-lucide="credit-card" class="w-5 h-5"></i>
-            <span class="ml-3">Doanh thu</span>
-          </a> -->
-          <a th:href="@{/admin/customers}" class="flex items-center w-full px-4 py-2 rounded-lg transition-colors bg-blue-600 text-white">
-            <i data-lucide="users" class="w-5 h-5"></i>
-            <span class="ml-3">Khách hàng</span>
-          </a>
-          <!-- <a th:href="@{/admin/comments}" class="flex items-center w-full px-4 py-2 rounded-lg transition-colors text-gray-300 hover:bg-gray-700 hover:text-white">
-            <i data-lucide="message-square" class="w-5 h-5"></i>
-            <span class="ml-3">Bình luận</span>
-          </a> -->
-        </nav>
-        <div class="px-4 py-4 border-t border-gray-700">
-          <a th:href="@{/logout}" class="flex items-center w-full px-4 py-2 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white">
-            <i data-lucide="log-out" class="w-5 h-5"></i>
-            <span class="ml-3">Đăng xuất</span>
-          </a>
-        </div>
-      </aside>
-      <div class="flex-1 flex flex-col overflow-hidden">
-        <header class="bg-white shadow-sm border-b border-gray-200">
-          <div class="flex items-center justify-between h-16 px-6" th:if="${isAuthenticated}">
-            <button class="text-gray-600">
-              <i data-lucide="menu"></i>
+      </header>
+
+      <main class="flex-1 flex flex-col p-6 overflow-hidden bg-gray-100">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6 flex-shrink-0">
+          <div>
+            <h2 class="text-2xl font-bold text-gray-800">Danh sách Khách hàng</h2>
+          </div>
+
+          <div class="flex items-center gap-3 w-full md:w-auto">
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <i data-lucide="search" class="w-4 h-4 text-gray-400"></i>
+              </div>
+              <input
+                type="text"
+                id="searchInput"
+                onkeyup="searchTable()"
+                class="block p-2 pl-10 text-sm border border-gray-300 rounded w-64 focus:outline-none focus:border-blue-500"
+                placeholder="Tìm kiếm..."
+              />
+            </div>
+
+            <button onclick="openModal('add')" class="flex items-center bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm font-medium">
+              <i data-lucide="plus" class="w-4 h-4 mr-2"></i>
+              Thêm mới
             </button>
-            <div class="flex items-center space-x-4">
-              <span class="text-gray-700 font-medium" th:text="'Chào, ' + ${currentUser}">Chào, Quản Trị Viên</span>
-            </div>
           </div>
-        </header>
-        <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
-          <div class="max-w-7xl mx-auto p-6">
-            <div class="animate-fade-in space-y-6">
-              <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-                <div>
-                  <h2 class="text-3xl font-bold text-gray-800">Quản lý Khách hàng</h2>
-                  <p class="text-gray-500 mt-1">Danh sách người dùng và trạng thái tài khoản</p>
-                </div>
+        </div>
 
-                <div class="flex items-center gap-3 w-full md:w-auto">
-                  <div class="relative group w-full md:w-72">
-                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                      <i data-lucide="search" class="w-5 h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors"></i>
-                    </div>
-                    <input
-                      type="text"
-                      id="searchInput"
-                      onkeyup="searchTable()"
-                      class="block w-full p-2.5 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500 shadow-sm transition-all"
-                      placeholder="Tìm tên, email, số điện thoại..."
-                    />
+        <div class="bg-white border border-gray-200 rounded shadow-sm flex-1 overflow-auto">
+          <table class="w-full text-left border-collapse text-sm" id="customerTable">
+            <thead class="bg-gray-50 sticky top-0 z-10 border-b border-gray-200">
+              <tr>
+                <th class="px-6 py-3 font-bold text-gray-600 uppercase text-xs">Thông tin</th>
+                <th class="px-6 py-3 font-bold text-gray-600 uppercase text-xs">Liên hệ</th>
+                <th class="px-6 py-3 font-bold text-gray-600 uppercase text-xs">Trạng thái</th>
+                <th class="px-6 py-3 font-bold text-gray-600 uppercase text-xs text-right">Hành động</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+              <tr th:each="user : ${customers}" class="hover:bg-gray-50 transition-colors">
+                <td class="px-6 py-4">
+                  <div class="font-bold text-gray-800" th:text="${user.fullName}">Nguyen Van A</div>
+                  <div class="text-xs text-gray-500 mt-1 flex items-center">
+                    <i data-lucide="user" class="w-3 h-3 mr-1"></i>
+                    <span th:text="${user.userName}">user123</span>
                   </div>
+                </td>
 
-                  <button
-                    onclick="openModal('add')"
-                    class="flex items-center justify-center bg-blue-600 text-white px-4 py-2.5 rounded-lg font-medium hover:bg-blue-700 transition-all shadow-md hover:shadow-lg transform active:scale-95 whitespace-nowrap"
-                  >
-                    <i data-lucide="user-plus" class="w-5 h-5 mr-2"></i>
-                    Thêm mới
-                  </button>
-                </div>
-              </div>
-
-              <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
-                <div class="overflow-x-auto">
-                  <table class="min-w-full divide-y divide-gray-200" id="customerTable">
-                    <thead class="bg-gray-50">
-                      <tr>
-                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Thông tin Khách hàng</th>
-                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Liên hệ</th>
-                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Trạng thái</th>
-                        <th class="px-6 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Hành động</th>
-                      </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                      <tr th:each="user : ${customers}" class="hover:bg-blue-50/30 transition-colors group">
-                        <td class="px-6 py-4 whitespace-nowrap">
-                          <div class="flex flex-col">
-                            <span class="text-sm font-bold text-gray-800" th:text="${user.fullName}">Nguyễn Văn A</span>
-                            <span class="text-xs text-gray-500 flex items-center gap-1 mt-1">
-                              <i data-lucide="user" class="w-3 h-3"></i>
-                              <span th:text="${user.userName}">username123</span>
-                            </span>
-                          </div>
-                        </td>
-
-                        <td class="px-6 py-4 whitespace-nowrap">
-                          <div class="flex flex-col space-y-1">
-                            <div class="text-sm text-gray-700 flex items-center gap-2">
-                              <i data-lucide="mail" class="w-4 h-4 text-gray-400"></i>
-                              <span th:text="${user.email}">email@example.com</span>
-                            </div>
-                            <div class="text-sm text-gray-700 flex items-center gap-2">
-                              <i data-lucide="phone" class="w-4 h-4 text-gray-400"></i>
-                              <span th:text="${user.phone}">0912345678</span>
-                            </div>
-                          </div>
-                        </td>
-
-                        <td class="px-6 py-4 whitespace-nowrap">
-                          <span
-                            th:if="${user.status == 'ACTIVE'}"
-                            class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700 border border-green-200"
-                          >
-                            <span class="w-1.5 h-1.5 mr-1.5 bg-green-500 rounded-full animate-pulse"></span>
-                            Hoạt động
-                          </span>
-                          <span
-                            th:unless="${user.status == 'ACTIVE'}"
-                            class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700 border border-red-200"
-                          >
-                            <span class="w-1.5 h-1.5 mr-1.5 bg-red-500 rounded-full"></span>
-                            Đã khóa
-                          </span>
-                        </td>
-
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                          <div class="flex items-center justify-end gap-2">
-                            <button
-                              th:data-id="${user.userId}"
-                              th:data-fullname="${user.fullName}"
-                              th:data-username="${user.userName}"
-                              th:data-email="${user.email}"
-                              th:data-phone="${user.phone}"
-                              onclick="openModal('edit', this)"
-                              class="text-indigo-600 hover:text-indigo-900 bg-indigo-50 hover:bg-indigo-100 p-2 rounded-lg transition-colors"
-                              title="Sửa"
-                            >
-                              <i data-lucide="edit-2" class="w-4 h-4"></i>
-                            </button>
-
-                            <form th:action="@{/admin/customers/lock}" method="post" class="inline">
-                              <input type="hidden" name="id" th:value="${user.userId}" />
-                              <button
-                                type="submit"
-                                class="text-yellow-600 hover:text-yellow-900 bg-yellow-50 hover:bg-yellow-100 p-2 rounded-lg transition-colors"
-                                th:title="${user.status == 'ACTIVE' ? 'Khóa tài khoản' : 'Mở khóa'}"
-                              >
-                                <i th:if="${user.status == 'ACTIVE'}" data-lucide="lock" class="w-4 h-4"></i>
-                                <i th:unless="${user.status == 'ACTIVE'}" data-lucide="unlock" class="w-4 h-4"></i>
-                              </button>
-                            </form>
-
-                            <form th:action="@{/admin/customers/delete}" method="post" class="inline">
-                              <input type="hidden" name="id" th:value="${user.userId}" />
-                              <button
-                                type="submit"
-                                onclick="return confirm('Bạn có chắc chắn muốn xóa vĩnh viễn?')"
-                                class="text-red-600 hover:text-red-900 bg-red-50 hover:bg-red-100 p-2 rounded-lg transition-colors"
-                                title="Xóa"
-                              >
-                                <i data-lucide="trash-2" class="w-4 h-4"></i>
-                              </button>
-                            </form>
-                          </div>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-
-                <div class="px-6 py-4 border-t border-gray-200 bg-gray-50 flex items-center justify-between">
-                  <span class="text-sm text-gray-500">Hiển thị danh sách khách hàng</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div id="userModal" class="fixed inset-0 z-50 hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-            <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity" onclick="closeModal()"></div>
-
-            <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
-              <div class="relative transform overflow-hidden rounded-xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-                <div class="bg-blue-600 px-4 py-4 sm:px-6">
-                  <div class="flex items-center justify-between">
-                    <h3 class="text-lg font-semibold leading-6 text-white" id="modalTitle">Thêm Khách hàng mới</h3>
-                    <button onclick="closeModal()" class="text-blue-100 hover:text-white transition-colors">
-                      <i data-lucide="x" class="w-6 h-6"></i>
-                    </button>
-                  </div>
-                </div>
-
-                <form id="userForm" method="post" th:action="@{/admin/customers/save}">
-                  <div class="px-4 py-5 sm:p-6 space-y-4">
-                    <input type="hidden" id="userId" name="userId" />
-
-                    <div class="grid grid-cols-2 gap-4">
-                      <div>
-                        <label for="fullName" class="block text-sm font-medium text-gray-700">Họ và tên</label>
-                        <input
-                          type="text"
-                          name="fullName"
-                          id="fullName"
-                          required
-                          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2"
-                          placeholder="Nguyễn Văn A"
-                        />
-                      </div>
-                      <div>
-                        <label for="userName" class="block text-sm font-medium text-gray-700">Tên đăng nhập</label>
-                        <input
-                          type="text"
-                          name="userName"
-                          id="userName"
-                          required
-                          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2"
-                          placeholder="username"
-                        />
-                      </div>
+                <td class="px-6 py-4">
+                  <div class="flex flex-col gap-1">
+                    <div class="flex items-center text-gray-600">
+                      <i data-lucide="mail" class="w-3 h-3 mr-2"></i>
+                      <span th:text="${user.email}">email@example.com</span>
                     </div>
-
-                    <div>
-                      <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-                      <div class="relative mt-1 rounded-md shadow-sm">
-                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                          <i data-lucide="mail" class="h-4 w-4 text-gray-400"></i>
-                        </div>
-                        <input
-                          type="email"
-                          name="email"
-                          id="email"
-                          required
-                          class="block w-full rounded-md border-gray-300 pl-10 focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2"
-                          placeholder="email@example.com"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label for="phone" class="block text-sm font-medium text-gray-700">Số điện thoại</label>
-                      <div class="relative mt-1 rounded-md shadow-sm">
-                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                          <i data-lucide="phone" class="h-4 w-4 text-gray-400"></i>
-                        </div>
-                        <input
-                          type="text"
-                          name="phone"
-                          id="phone"
-                          class="block w-full rounded-md border-gray-300 pl-10 focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2"
-                          placeholder="0912345678"
-                        />
-                      </div>
-                    </div>
-
-                    <div id="passwordField">
-                      <label for="password" class="block text-sm font-medium text-gray-700">Mật khẩu</label>
-                      <input
-                        type="password"
-                        name="password"
-                        id="password"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2"
-                        placeholder="******"
-                      />
-                      <p class="mt-1 text-xs text-gray-500" id="passHint">Mặc định: 123456 (Nếu để trống)</p>
+                    <div class="flex items-center text-gray-600">
+                      <i data-lucide="phone" class="w-3 h-3 mr-2"></i>
+                      <span th:text="${user.phone}">0987654321</span>
                     </div>
                   </div>
+                </td>
 
-                  <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                <td class="px-6 py-4">
+                  <span th:if="${user.status == 'ACTIVE'}" class="px-2 py-1 bg-green-100 text-green-800 text-xs font-bold rounded">Hoạt động</span>
+                  <span th:unless="${user.status == 'ACTIVE'}" class="px-2 py-1 bg-red-100 text-red-800 text-xs font-bold rounded">Đã khóa</span>
+                </td>
+
+                <td class="px-6 py-4 text-right">
+                  <div class="flex justify-end gap-2">
                     <button
-                      type="submit"
-                      class="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 sm:ml-3 sm:w-auto"
+                      th:data-id="${user.userId}"
+                      th:data-fullname="${user.fullName}"
+                      th:data-username="${user.userName}"
+                      th:data-email="${user.email}"
+                      th:data-phone="${user.phone}"
+                      onclick="openModal('edit', this)"
+                      class="p-2 bg-gray-100 hover:bg-blue-100 text-blue-600 rounded"
+                      title="Sửa"
                     >
-                      Lưu thay đổi
+                      <i data-lucide="edit-2" class="w-4 h-4"></i>
                     </button>
-                    <button
-                      type="button"
-                      onclick="closeModal()"
-                      class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
-                    >
-                      Hủy bỏ
-                    </button>
+
+                    <form th:action="@{/admin/customers/lock}" method="post" class="inline">
+                      <input type="hidden" name="id" th:value="${user.userId}" />
+                      <button type="submit" class="p-2 bg-gray-100 hover:bg-yellow-100 text-yellow-600 rounded" th:title="${user.status == 'ACTIVE' ? 'Khóa' : 'Mở khóa'}">
+                        <i th:if="${user.status == 'ACTIVE'}" data-lucide="lock" class="w-4 h-4"></i>
+                        <i th:unless="${user.status == 'ACTIVE'}" data-lucide="unlock" class="w-4 h-4"></i>
+                      </button>
+                    </form>
+
+                    <form th:action="@{/admin/customers/delete}" method="post" class="inline">
+                      <input type="hidden" name="id" th:value="${user.userId}" />
+                      <button type="submit" onclick="return confirm('Xóa vĩnh viễn user này?')" class="p-2 bg-gray-100 hover:bg-red-100 text-red-600 rounded" title="Xóa">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                      </button>
+                    </form>
                   </div>
-                </form>
-              </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+
+    <div id="userModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black bg-opacity-50">
+      <div class="bg-white rounded-lg shadow-xl w-full max-w-lg mx-4 overflow-hidden">
+        <div class="bg-blue-600 px-6 py-4 flex justify-between items-center">
+          <h3 class="text-white font-bold text-lg" id="modalTitle">Thông tin Khách hàng</h3>
+          <button onclick="closeModal()" class="text-blue-100 hover:text-white">
+            <i data-lucide="x" class="w-6 h-6"></i>
+          </button>
+        </div>
+
+        <form id="userForm" method="post" th:action="@{/admin/customers/save}" class="p-6 space-y-4">
+          <input type="hidden" id="userId" name="userId" />
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Họ và tên</label>
+              <input
+                type="text"
+                id="fullName"
+                name="fullName"
+                required
+                class="w-full border border-gray-300 p-2 rounded focus:border-blue-500 outline-none"
+                placeholder="Nguyễn Văn A"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Tên đăng nhập</label>
+              <input type="text" id="userName" name="userName" required class="w-full border border-gray-300 p-2 rounded focus:border-blue-500 outline-none bg-gray-50" />
             </div>
           </div>
-        </main>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              required
+              class="w-full border border-gray-300 p-2 rounded focus:border-blue-500 outline-none"
+              placeholder="email@example.com"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Số điện thoại</label>
+            <input type="text" id="phone" name="phone" class="w-full border border-gray-300 p-2 rounded focus:border-blue-500 outline-none" placeholder="09..." />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Mật khẩu</label>
+            <input type="password" id="password" name="password" class="w-full border border-gray-300 p-2 rounded focus:border-blue-500 outline-none" placeholder="******" />
+            <p class="text-xs text-gray-500 mt-1" id="passHint">Mặc định: 123456</p>
+          </div>
+
+          <div class="pt-4 flex justify-end gap-3 border-t border-gray-100">
+            <button type="button" onclick="closeModal()" class="px-4 py-2 border border-gray-300 text-gray-700 rounded hover:bg-gray-50">Hủy</button>
+            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-medium">Lưu lại</button>
+          </div>
+        </form>
       </div>
     </div>
 
     <script>
-      // Khởi tạo icons
       lucide.createIcons();
 
-      // 1. Hàm Tìm kiếm Client-side (Tìm ngay lập tức không cần load lại trang)
+      // --- LOGIC TÌM KIẾM ---
       function searchTable() {
         let input = document.getElementById("searchInput");
         let filter = input.value.toUpperCase();
         let table = document.getElementById("customerTable");
         let tr = table.getElementsByTagName("tr");
 
-        // Duyệt qua tất cả các dòng (trừ header)
+        // Bỏ qua dòng header (i=1)
         for (let i = 1; i < tr.length; i++) {
-          let tdName = tr[i].getElementsByTagName("td")[0]; // Cột Tên
-          let tdContact = tr[i].getElementsByTagName("td")[1]; // Cột Liên hệ
+          // Tìm trong cột Thông tin (index 0) và Liên hệ (index 1)
+          let tdInfo = tr[i].getElementsByTagName("td")[0];
+          let tdContact = tr[i].getElementsByTagName("td")[1];
 
-          if (tdName || tdContact) {
-            let txtName = tdName.textContent || tdName.innerText;
+          if (tdInfo || tdContact) {
+            let txtInfo = tdInfo.textContent || tdInfo.innerText;
             let txtContact = tdContact.textContent || tdContact.innerText;
 
-            // Kiểm tra xem từ khóa có nằm trong Tên hoặc Liên hệ không
-            if (txtName.toUpperCase().indexOf(filter) > -1 || txtContact.toUpperCase().indexOf(filter) > -1) {
+            if (txtInfo.toUpperCase().indexOf(filter) > -1 || txtContact.toUpperCase().indexOf(filter) > -1) {
               tr[i].style.display = "";
             } else {
               tr[i].style.display = "none";
@@ -354,12 +242,12 @@
         }
       }
 
-      // 2. Logic Modal (Thêm / Sửa)
+      // --- LOGIC MODAL ---
       const modal = document.getElementById("userModal");
       const modalTitle = document.getElementById("modalTitle");
       const userForm = document.getElementById("userForm");
 
-      // Các field input
+      // Inputs
       const inpId = document.getElementById("userId");
       const inpName = document.getElementById("fullName");
       const inpUser = document.getElementById("userName");
@@ -372,26 +260,29 @@
         modal.classList.remove("hidden");
 
         if (mode === "add") {
-          // Chế độ Thêm mới
           modalTitle.textContent = "Thêm Khách hàng mới";
           userForm.reset();
-          inpId.value = ""; // ID rỗng -> Backend biết là tạo mới
-          inpUser.readOnly = false;
+          inpId.value = "";
+
+          inpUser.readOnly = false; // Cho phép nhập user
+          inpUser.classList.remove("bg-gray-100", "cursor-not-allowed");
+
           inpPass.required = true;
           passHint.textContent = "Mật khẩu là bắt buộc khi tạo mới";
         } else {
-          // Chế độ Sửa (Lấy dữ liệu từ nút bấm)
           modalTitle.textContent = "Cập nhật thông tin";
 
-          // Lấy data từ attribute th:data-...
+          // Fill data
           inpId.value = btnElement.getAttribute("data-id");
           inpName.value = btnElement.getAttribute("data-fullname");
           inpUser.value = btnElement.getAttribute("data-username");
           inpEmail.value = btnElement.getAttribute("data-email");
           inpPhone.value = btnElement.getAttribute("data-phone");
 
-          // Khi sửa, username thường không cho đổi, pass để trống nghĩa là không đổi
+          // Không cho sửa Username
           inpUser.readOnly = true;
+          inpUser.classList.add("bg-gray-100", "cursor-not-allowed");
+
           inpPass.value = "";
           inpPass.required = false;
           passHint.textContent = "Để trống nếu không muốn đổi mật khẩu";
@@ -402,11 +293,8 @@
         modal.classList.add("hidden");
       }
 
-      // Đóng modal khi bấm ESC
-      document.addEventListener("keydown", function (event) {
-        if (event.key === "Escape") {
-          closeModal();
-        }
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeModal();
       });
     </script>
   </body>

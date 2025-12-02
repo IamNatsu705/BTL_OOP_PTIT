@@ -7,6 +7,7 @@ import btl_oop.btl_oop.Repositories.SlotRepository;
 import btl_oop.btl_oop.Repositories.UserRepository;
 import btl_oop.btl_oop.Repositories.TypeSlotRepository;
 import btl_oop.btl_oop.Utils.HashUtil;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
 import java.util.*;
@@ -31,8 +32,15 @@ public class AdminController {
     private final UserRepository userRepo;
     private final TypeSlotRepository typeSlotRepo;
     private final SlotRepository slotRepo;
+    private boolean isAdmin(HttpSession session) {
+        String role = (String) session.getAttribute("role");
+        return "admin".equalsIgnoreCase(role);
+    }
     @GetMapping("/admin")
-    public String adminOverview(Model model) {
+    public String adminOverview(Model model,HttpSession session) {
+        if (!isAdmin(session)) {
+            return "redirect:/"; 
+        }
         // 1. Thống kê KHÁCH HÀNG
         long totalCustomers = userRepo.count();
 
@@ -75,20 +83,21 @@ public class AdminController {
     }
 
     @GetMapping("/admin/courts")
-    public String adminCourts(Model model) {
-        // Lấy danh sách sân thật
-        model.addAttribute("courts", courtSlotService.getAllCourts());
+    public String adminCourts(Model model,HttpSession session) {
+        if (!isAdmin(session)) {
+            return "redirect:/"; 
+        }
         return "admin-courts";
     }
 
     // Các trang admin con khác (Pricing, Customers...) bạn cứ giữ nguyên mockup tạm thời
     // hoặc update dần sau.
     @GetMapping("/admin/pricing")
-    public String adminPricing(Model model) {
-        // 1. Lấy 3 mức giá
+    public String adminPricing(Model model,HttpSession session) {
+        if (!isAdmin(session)) {
+            return "redirect:/"; 
+        }
         model.addAttribute("typeSlots", typeSlotRepo.findAll());
-        
-        // 2. Lấy danh sách 24 Slot (Sắp xếp theo giờ bắt đầu để hiển thị từ 0h -> 23h)
         model.addAttribute("slots", slotRepo.findAll(Sort.by(Sort.Direction.ASC, "timeBegin")));
         
         return "admin-pricing";
@@ -96,7 +105,10 @@ public class AdminController {
 
     // --- 1. CẬP NHẬT GIÁ TIỀN (Giữ nguyên) ---
     @PostMapping("/admin/pricing/update")
-    public String updatePrice(@RequestParam Long id, @RequestParam BigDecimal price) {
+    public String updatePrice(@RequestParam Long id, @RequestParam BigDecimal price,HttpSession session) {
+        if (!isAdmin(session)) {
+            return "redirect:/"; 
+        }
         TypeSlots typeSlot = typeSlotRepo.findById(id).orElse(null);
         if (typeSlot != null) {
             typeSlot.setPrice(price);
@@ -109,8 +121,10 @@ public class AdminController {
     // Chúng ta dùng Map<String, String> để hứng tất cả các ô select gửi lên
     // Key sẽ là "slot_1", "slot_2"... Value là ID của TypeSlot (ví dụ "1", "2")
     @PostMapping("/admin/pricing/configure")
-    public String configureSchedule(@RequestParam Map<String, String> allParams) {
-        
+    public String configureSchedule(@RequestParam Map<String, String> allParams,HttpSession session) {
+        if (!isAdmin(session)) {
+            return "redirect:/"; 
+        }
         // Duyệt qua tất cả tham số gửi lên
         for (Map.Entry<String, String> entry : allParams.entrySet()) {
             String key = entry.getKey();   // Ví dụ: "slot_5" (5 là id của slot)
@@ -137,12 +151,18 @@ public class AdminController {
     }
 
     @GetMapping("/admin/customers")
-    public String adminCustomers(Model model) {
+    public String adminCustomers(Model model,HttpSession session) {
+        if (!isAdmin(session)) {
+            return "redirect:/"; 
+        }
         model.addAttribute("customers", userRepo.findAll());
         return "admin-customers";
     }
     @PostMapping("/admin/customers/delete")
-    public String deleteCustomer(@RequestParam Long id, RedirectAttributes redirectAttrs) {
+    public String deleteCustomer(@RequestParam Long id, RedirectAttributes redirectAttrs,HttpSession session) {
+        if (!isAdmin(session)) {
+            return "redirect:/"; 
+        }
         // Kiểm tra khách hàng tồn tại
         if(userRepo.existsById(id)) {
             userRepo.deleteById(id);
@@ -161,8 +181,11 @@ public class AdminController {
                                @RequestParam String email,
                                @RequestParam(required = false) String phone,
                                @RequestParam(required = false) String password,
-                               RedirectAttributes redirectAttrs) {
-
+                               RedirectAttributes redirectAttrs,
+                               HttpSession session) {
+        if (!isAdmin(session)) {
+            return "redirect:/"; 
+        }
         if (userId == null) {
             // Thêm mới
             User newUser = new User();
@@ -205,7 +228,10 @@ public class AdminController {
         return "redirect:/admin/customers";
     }
     @PostMapping("/admin/customers/lock")
-    public String lockOrUnlockCustomer(@RequestParam Long id, RedirectAttributes redirectAttrs) {
+    public String lockOrUnlockCustomer(@RequestParam Long id, RedirectAttributes redirectAttrs,HttpSession session) {
+        if (!isAdmin(session)) {
+            return "redirect:/"; 
+        }
         Optional<User> optUser = userRepo.findById(id);
         if (optUser.isPresent()) {
             User user = optUser.get();

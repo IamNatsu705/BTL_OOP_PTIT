@@ -3,191 +3,221 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Đăng ký</title>
+    <title>Đăng ký - Badminton Court</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-    <style>
-      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap");
-      body {
-        font-family: "Inter", sans-serif;
-      }
-      @keyframes fade-in-up {
-        from {
-          opacity: 0;
-          transform: translateY(20px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-      .animate-fade-in-up {
-        animation: fade-in-up 0.5s ease-out;
-      }
-    </style>
   </head>
-  <body class="flex flex-col min-h-screen w-full bg-gray-50">
-    <nav class="bg-white shadow-md sticky top-0 z-40"></nav>
+  <body class="flex flex-col min-h-screen w-full bg-gray-50 text-gray-800 font-sans">
+    <nav class="bg-white border-b border-gray-200 sticky top-0 z-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <div class="flex-shrink-0">
+            <a th:href="@{/}" class="flex items-center space-x-2">
+              <i data-lucide="activity" class="w-8 h-8 text-blue-600"></i>
+              <span class="text-xl font-bold text-gray-800">Badminton Court</span>
+            </a>
+          </div>
 
-    <main class="flex-1">
-      <div class="flex justify-center items-center py-20 md:py-24 bg-gray-50">
-        <div
-          class="w-full max-w-2xl bg-white rounded-lg shadow-xl p-12 animate-fade-in-up"
-        >
-          <h2 class="text-3xl font-bold text-center text-gray-800 mb-8">
-            Tạo Tài Khoản Mới
-          </h2>
+          <div class="hidden md:flex md:items-center md:space-x-1">
+            <a th:href="@{/}" class="text-gray-600 hover:text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-md text-sm font-medium transition-colors">Trang chủ</a>
+            <a th:href="@{/booking}" class="text-gray-600 hover:text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-md text-sm font-medium transition-colors">Đặt sân</a>
+            <a th:href="@{/contact}" class="text-gray-600 hover:text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-md text-sm font-medium transition-colors">Liên hệ</a>
 
-          <!-- Thông báo lỗi -->
-          <p
-            th:if="${error}"
-            class="text-red-500 text-center mb-4"
-            th:text="${error}"
-          ></p>
+            <div class="ml-4 flex gap-2">
+              <a th:href="@{/login}" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Đăng nhập</a>
+              <a th:href="@{/register}" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium shadow-sm">Đăng ký</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
 
-          <form th:action="@{/register}" method="post" class="space-y-5">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1"
-                  >Họ và tên</label
-                >
-                <div class="relative">
-                  <i
-                    data-lucide="user"
-                    class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
-                  ></i>
-                  <input
-                    type="text"
-                    name="fullName"
-                    required
-                    class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
+    <main class="flex-1 flex items-center justify-center p-6">
+      <div class="w-full max-w-2xl bg-white rounded-lg border border-gray-200 shadow-sm p-8">
+        <div class="text-center mb-8">
+          <h2 class="text-2xl font-bold text-gray-900">Tạo Tài Khoản Mới</h2>
+          <p class="text-sm text-gray-500 mt-2">Tham gia hệ thống đặt sân ngay hôm nay</p>
+        </div>
+
+        <div th:if="${error}" class="mb-6 p-3 rounded bg-red-50 border border-red-200 text-red-700 text-sm text-center">
+          <span class="font-bold mr-1">Lỗi:</span>
+          <span th:text="${error}"></span>
+        </div>
+
+        <form th:action="@{/register}" method="post" class="space-y-5">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Họ và tên</label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i data-lucide="user" class="w-5 h-5 text-gray-400"></i>
                 </div>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1"
-                  >Tên đăng nhập</label
-                >
-                <div class="relative">
-                  <i
-                    data-lucide="user-plus"
-                    class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
-                  ></i>
-                  <input
-                    type="text"
-                    name="username"
-                    required
-                    class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
+                <input
+                  type="text"
+                  name="fullName"
+                  required
+                  placeholder="Nguyễn Văn A"
+                  class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-colors"
+                />
               </div>
             </div>
-
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1"
-                >Email</label
-              >
+              <label class="block text-sm font-medium text-gray-700 mb-1">Tên đăng nhập</label>
               <div class="relative">
-                <i
-                  data-lucide="mail"
-                  class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
-                ></i>
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i data-lucide="user-plus" class="w-5 h-5 text-gray-400"></i>
+                </div>
+                <input
+                  type="text"
+                  name="username"
+                  required
+                  placeholder="user123"
+                  class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-colors"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i data-lucide="mail" class="w-5 h-5 text-gray-400"></i>
+                </div>
                 <input
                   type="email"
                   name="email"
                   required
-                  class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="example@gmail.com"
+                  class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-colors"
                 />
               </div>
             </div>
-
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1"
-                >Số điện thoại</label
-              >
+              <label class="block text-sm font-medium text-gray-700 mb-1">Số điện thoại</label>
               <div class="relative">
-                <i
-                  data-lucide="phone"
-                  class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
-                ></i>
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i data-lucide="phone" class="w-5 h-5 text-gray-400"></i>
+                </div>
                 <input
                   type="tel"
                   name="phone"
                   required
-                  class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="098..."
+                  class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-colors"
                 />
               </div>
             </div>
+          </div>
 
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1"
-                >Mật khẩu</label
-              >
+              <label class="block text-sm font-medium text-gray-700 mb-1">Mật khẩu</label>
               <div class="relative">
-                <i
-                  data-lucide="lock"
-                  class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
-                ></i>
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i data-lucide="lock" class="w-5 h-5 text-gray-400"></i>
+                </div>
                 <input
                   type="password"
                   name="password"
                   required
-                  class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="••••••"
+                  class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-colors"
                 />
               </div>
             </div>
-
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1"
-                >Xác nhận mật khẩu</label
-              >
+              <label class="block text-sm font-medium text-gray-700 mb-1">Xác nhận mật khẩu</label>
               <div class="relative">
-                <i
-                  data-lucide="lock"
-                  class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
-                ></i>
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i data-lucide="check-circle" class="w-5 h-5 text-gray-400"></i>
+                </div>
                 <input
                   type="password"
                   name="confirmPassword"
                   required
-                  class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="••••••"
+                  class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-colors"
                 />
               </div>
             </div>
+          </div>
 
-            <!-- Nút Đăng ký -->
-            <button
-              type="submit"
-              class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-md mt-4"
-            >
-              Đăng Ký
-            </button>
+          <div class="pt-4">
+            <button type="submit" class="w-full bg-blue-600 text-white py-3 px-4 rounded font-bold hover:bg-blue-700 transition-colors shadow-sm">Đăng Ký Ngay</button>
+          </div>
 
-            <!-- Link Đăng nhập -->
-            <p class="text-center text-gray-600 mt-4">
-              Đã có tài khoản?
-              <a
-                th:href="@{/login}"
-                class="text-blue-600 font-semibold hover:underline"
-              >
-                Đăng nhập
-              </a>
-            </p>
-          </form>
-        </div>
+          <div class="text-center text-sm text-gray-600 mt-4">
+            Đã có tài khoản?
+            <a th:href="@{/login}" class="text-blue-600 hover:underline font-medium">Đăng nhập</a>
+          </div>
+        </form>
       </div>
     </main>
 
-    <footer class="bg-gray-800 text-gray-300 mt-16"></footer>
+    <footer class="bg-white border-t border-gray-200 pt-10 pb-6">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+          <div class="col-span-1 md:col-span-1">
+            <div class="flex items-center space-x-2 mb-4">
+              <i data-lucide="activity" class="w-6 h-6 text-blue-600"></i>
+              <span class="text-lg font-bold text-gray-800">Badminton Court</span>
+            </div>
+            <p class="text-sm text-gray-500 leading-relaxed">Hệ thống sân cầu lông hiện đại, chất lượng cao, phục vụ đam mê thể thao của bạn mọi lúc mọi nơi.</p>
+          </div>
 
-    <!-- Thông báo -->
+          <div>
+            <h5 class="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">Liên kết</h5>
+            <ul class="space-y-2 text-sm text-gray-600">
+              <li><a th:href="@{/}" class="hover:text-blue-600">Trang chủ</a></li>
+              <li><a th:href="@{/booking}" class="hover:text-blue-600">Đặt sân</a></li>
+              <li><a href="#" class="hover:text-blue-600">Bảng giá</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <h5 class="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">Hỗ trợ</h5>
+            <ul class="space-y-2 text-sm text-gray-600">
+              <li><a href="#" class="hover:text-blue-600">Điều khoản sử dụng</a></li>
+              <li><a href="#" class="hover:text-blue-600">Chính sách bảo mật</a></li>
+              <li><a href="#" class="hover:text-blue-600">Câu hỏi thường gặp</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <h5 class="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">Liên hệ</h5>
+            <ul class="space-y-2 text-sm text-gray-600">
+              <li class="flex items-center">
+                <i data-lucide="map-pin" class="w-4 h-4 mr-2 text-gray-400"></i>
+                PTIT, Hà Đông, Hà Nội
+              </li>
+              <li class="flex items-center">
+                <i data-lucide="phone" class="w-4 h-4 mr-2 text-gray-400"></i>
+                (028) 3812 3456
+              </li>
+              <li class="flex items-center">
+                <i data-lucide="mail" class="w-4 h-4 mr-2 text-gray-400"></i>
+                support@court.vn
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="border-t border-gray-100 pt-6 text-center text-sm text-gray-400">&copy; 2025 Badminton Court System. All rights reserved.</div>
+      </div>
+    </footer>
+
     <div
       th:if="${notificationMessage}"
-      th:classappend="${notificationType == 'success'} ? 'bg-green-500' :
-                         (${notificationType == 'error'} ? 'bg-red-500' : 'bg-blue-500')"
-      class="fixed bottom-5 right-5 p-4 rounded-lg shadow-lg text-white z-50"
+      th:classappend="${notificationType == 'success'} ? 'bg-green-600' : (${notificationType == 'error'} ? 'bg-red-600' : 'bg-blue-600')"
+      class="fixed bottom-5 right-5 px-6 py-3 rounded-lg shadow-lg text-white text-sm font-medium z-50"
     >
-      <p th:text="${notificationMessage}"></p>
+      <div class="flex items-center gap-2">
+        <i th:if="${notificationType == 'success'}" data-lucide="check-circle" class="w-5 h-5"></i>
+        <i th:if="${notificationType == 'error'}" data-lucide="alert-circle" class="w-5 h-5"></i>
+        <span th:text="${notificationMessage}">Thông báo</span>
+      </div>
     </div>
 
     <script>

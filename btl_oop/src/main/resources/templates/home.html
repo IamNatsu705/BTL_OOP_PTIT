@@ -6,64 +6,42 @@
     <title>Trang chủ - Badminton Court</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-    <style>
-      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap");
-      body {
-        font-family: "Inter", sans-serif;
-      }
-      .text-shadow-lg {
-        text-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-      }
-      @keyframes fade-in {
-        from {
-          opacity: 0;
-        }
-        to {
-          opacity: 1;
-        }
-      }
-      .animate-fade-in {
-        animation: fade-in 0.5s ease-out;
-      }
-    </style>
   </head>
-  <body class="flex flex-col min-h-screen w-full bg-gray-50">
-    <nav class="bg-white shadow-md sticky top-0 z-40">
+  <body class="flex flex-col min-h-screen w-full bg-gray-50 text-gray-800 font-sans">
+    <nav class="bg-white border-b border-gray-200 sticky top-0 z-50">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
           <div class="flex-shrink-0">
             <a th:href="@{/}" class="flex items-center space-x-2">
-              <img class="h-8 w-auto" src="https://img.icons8.com/color/48/badminton-2.png" alt="Logo Sân cầu lông" />
+              <i data-lucide="activity" class="w-8 h-8 text-blue-600"></i>
               <span class="text-xl font-bold text-gray-800">Badminton Court</span>
             </a>
           </div>
 
-          <div class="hidden md:flex md:items-center md:space-x-4">
-            <a th:href="@{/}" class="text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Trang chủ</a>
-            <a th:href="@{/booking}" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Đặt sân</a>
-            <a th:href="@{/contact}" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Liên hệ</a>
+          <div class="hidden md:flex md:items-center md:space-x-1">
+            <a th:href="@{/}" class="bg-blue-600 text-white px-3 py-2 rounded-md text-sm font-medium shadow-sm">Trang chủ</a>
+            <a th:href="@{/booking}" class="text-gray-600 hover:text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-md text-sm font-medium transition-colors">Đặt sân</a>
+            <a th:href="@{/contact}" class="text-gray-600 hover:text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-md text-sm font-medium transition-colors">Liên hệ</a>
 
-            <div th:if="${isAuthenticated}">
+            <div th:if="${isAuthenticated}" class="ml-4">
               <div class="relative group">
-                <button class="flex items-center text-gray-600 hover:text-blue-600 px-3 py-2">
+                <button class="flex items-center text-gray-700 font-medium hover:text-blue-600 px-3 py-2">
                   Chào,
-                  <span th:text="${currentUser}">User</span>
+                  <span th:text="${currentUser}" class="ml-1">User</span>
                   <i data-lucide="chevron-down" class="w-4 h-4 ml-1"></i>
                 </button>
-                <div
-                  class="opacity-0 group-hover:opacity-100 invisible group-hover:visible absolute right-0 mt-0 w-48 bg-white rounded-md shadow-lg py-1 z-50 transition-all duration-200"
-                >
-                  <a th:if="${role == 'admin'}" th:href="@{/admin}" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Trang Quản Trị</a>
-                  <a href="/profile" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Thông tin cá nhân</a>
-                  <a href="/history" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Lịch sử đặt sân</a>
-                  <a th:href="@{/logout}" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Đăng xuất</a>
+                <div class="hidden group-hover:block absolute right-0 mt-0 w-48 bg-white rounded-md shadow-lg border border-gray-100 py-1 z-50">
+                  <a th:if="${role == 'admin'}" th:href="@{/admin}" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Trang Quản Trị</a>
+                  <a href="/profile" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Thông tin cá nhân</a>
+                  <a href="/history" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Lịch sử đặt sân</a>
+                  <a th:href="@{/logout}" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">Đăng xuất</a>
                 </div>
               </div>
             </div>
 
-            <div th:unless="${isAuthenticated}">
+            <div th:unless="${isAuthenticated}" class="ml-4 flex gap-2">
               <a th:href="@{/login}" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Đăng nhập</a>
-              <a th:href="@{/register}" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors">Đăng ký</a>
+              <a th:href="@{/register}" class="border border-blue-600 text-blue-600 px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-50 transition-colors">Đăng ký</a>
             </div>
           </div>
         </div>
@@ -71,126 +49,163 @@
     </nav>
 
     <main class="flex-1">
-      <div class="animate-fade-in">
-        <div class="relative h-[70vh] min-h-[500px] bg-gray-800">
-          <img
-            src="https://placehold.co/1600x900/334155/e2e8f0?text=Sân+Cầu+Lông+Chuyên+Nghiệp"
-            alt="Sân cầu lông"
-            class="absolute inset-0 w-full h-full object-cover opacity-50"
-          />
-          <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col justify-center items-center text-center">
-            <h1 class="text-4xl md:text-6xl font-extrabold text-white text-shadow-lg">Trải Nghiệm Sân Cầu Lông</h1>
-            <h2 class="text-5xl font-extrabold text-blue-300 text-shadow-lg mt-2">Đẳng Cấp</h2>
-            <p class="mt-6 text-lg text-gray-200 max-w-2xl">Sàn thảm tiêu chuẩn quốc tế, ánh sáng chống lóa, không gian thoáng đãng.</p>
-            <a
-              th:href="@{/booking}"
-              class="mt-10 bg-blue-600 text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-blue-700 transition-transform hover:scale-105 shadow-lg"
-            >
-              Đặt Sân Ngay
-            </a>
-          </div>
-        </div>
+      <div class="relative bg-gray-900 h-[500px] flex items-center justify-center text-center px-4 overflow-hidden">
+        <img src="https://placehold.co/1600x900/1e293b/e2e8f0?text=San+Cau+Long+Chat+Luong+Cao" alt="Background" class="absolute inset-0 w-full h-full object-cover opacity-40" />
 
-        <div class="bg-gray-50">
-          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-            <h3 class="text-3xl font-bold text-center text-gray-800 mb-12">Tại sao chọn chúng tôi?</h3>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div class="bg-white p-8 rounded-lg shadow-md text-center">
-                <i data-lucide="shield-check" class="w-12 h-12 text-blue-600 mx-auto mb-4"></i>
-                <h4 class="text-xl font-semibold mb-2">Chất Lượng Sân</h4>
-                <p class="text-gray-600">6 sân đạt chuẩn, bảo trì thường xuyên, đảm bảo trải nghiệm tốt nhất.</p>
+        <div class="relative z-10 max-w-4xl mx-auto">
+          <h1 class="text-4xl md:text-6xl font-extrabold text-white mb-4 tracking-tight">
+            Trải Nghiệm Sân Cầu Lông
+            <span class="text-blue-400">Đẳng Cấp</span>
+          </h1>
+          <p class="text-lg md:text-xl text-gray-200 mb-8 max-w-2xl mx-auto leading-relaxed">
+            Sàn thảm tiêu chuẩn quốc tế, hệ thống ánh sáng chống lóa và không gian thoáng đãng giúp bạn thi đấu thăng hoa.
+          </p>
+          <a th:href="@{/booking}" class="inline-flex items-center px-8 py-3 bg-blue-600 text-white text-lg font-bold rounded-full hover:bg-blue-700 transition-colors shadow-lg">
+            <i data-lucide="calendar-check" class="w-5 h-5 mr-2"></i>
+            Đặt Sân Ngay
+          </a>
+        </div>
+      </div>
+
+      <div class="bg-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-gray-900">Tại sao chọn chúng tôi?</h2>
+            <p class="text-gray-500 mt-2">Dịch vụ chuyên nghiệp mang đến trải nghiệm tốt nhất</p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="bg-gray-50 p-6 rounded-xl border border-gray-100 text-center hover:shadow-md transition-shadow">
+              <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="shield-check" class="w-6 h-6"></i>
               </div>
-              <div class="bg-white p-8 rounded-lg shadow-md text-center">
-                <i data-lucide="tag" class="w-12 h-12 text-blue-600 mx-auto mb-4"></i>
-                <h4 class="text-xl font-semibold mb-2">Giá Cả Hợp Lý</h4>
-                <p class="text-gray-600">Nhiều khung giờ với mức giá linh hoạt, phù hợp cho mọi đối tượng.</p>
+              <h3 class="text-xl font-bold text-gray-800 mb-2">Chất Lượng Sân</h3>
+              <p class="text-gray-600 text-sm">6 sân đạt chuẩn thi đấu, được vệ sinh và bảo trì hàng ngày.</p>
+            </div>
+
+            <div class="bg-gray-50 p-6 rounded-xl border border-gray-100 text-center hover:shadow-md transition-shadow">
+              <div class="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="banknote" class="w-6 h-6"></i>
               </div>
-              <div class="bg-white p-8 rounded-lg shadow-md text-center">
-                <i data-lucide="calendar" class="w-12 h-12 text-blue-600 mx-auto mb-4"></i>
-                <h4 class="text-xl font-semibold mb-2">Đặt Sân Dễ Dàng</h4>
-                <p class="text-gray-600">Hệ thống đặt sân online nhanh chóng, tiện lợi, mọi lúc mọi nơi.</p>
+              <h3 class="text-xl font-bold text-gray-800 mb-2">Giá Cả Hợp Lý</h3>
+              <p class="text-gray-600 text-sm">Nhiều khung giờ với mức giá linh hoạt, ưu đãi cho thành viên.</p>
+            </div>
+
+            <div class="bg-gray-50 p-6 rounded-xl border border-gray-100 text-center hover:shadow-md transition-shadow">
+              <div class="w-12 h-12 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="zap" class="w-6 h-6"></i>
               </div>
+              <h3 class="text-xl font-bold text-gray-800 mb-2">Đặt Sân Nhanh</h3>
+              <p class="text-gray-600 text-sm">Hệ thống online tiện lợi, giữ chỗ ngay lập tức chỉ với vài cú click.</p>
             </div>
           </div>
         </div>
+      </div>
 
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <h3 class="text-3xl font-bold text-center text-gray-800 mb-12">Các Sân Của Chúng Tôi</h3>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-8" th:if="${courts != null and !courts.isEmpty()}">
-            <div th:each="court : ${courts}" class="bg-white rounded-lg shadow-lg overflow-hidden transition-transform hover:scale-105">
-              <img th:src="@{'https://placehold.co/600x400/5e60e6/ffffff?text=' + ${court.name}}" th:alt="${court.name}" class="w-full h-48 object-cover" />
-              <div class="p-6">
-                <h4 class="text-xl font-semibold mb-2" th:text="${court.name}">Sân 1</h4>
-                <p class="text-gray-600 text-sm mb-4" th:text="${court.description}">Mô tả sân...</p>
-                <span
-                  class="inline-block px-3 py-1 rounded-full text-sm font-semibold"
-                  th:text="${court.status == 'available' ? 'Sẵn sàng' : 'Đang bảo trì'}"
-                  th:classappend="${court.status == 'available' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}"
-                >
-                  Trạng thái
-                </span>
+      <div class="bg-gray-50 py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-gray-900">Danh sách Sân</h2>
+            <p class="text-gray-500 mt-2">Khám phá không gian tập luyện của chúng tôi</p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" th:if="${courts != null and !courts.isEmpty()}">
+            <div th:each="court : ${courts}" class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
+              <div class="h-48 bg-gray-200 relative">
+                <img th:src="@{'https://placehold.co/600x400/e2e8f0/64748b?text=' + ${court.name}}" th:alt="${court.name}" class="w-full h-full object-cover" />
+                <div class="absolute top-2 right-2">
+                  <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-bold rounded shadow-sm">Sẵn sàng</span>
+                  <!-- <span th:unless="${court.status == 'available'}" class="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs font-bold rounded shadow-sm">Bảo trì</span> -->
+                </div>
+              </div>
+
+              <div class="p-5">
+                <h4 class="text-lg font-bold text-gray-800 mb-2" th:text="${court.name}">Sân 1</h4>
+                <p class="text-gray-500 text-sm mb-4 line-clamp-2" th:text="${court.description}">Mô tả chi tiết về sân...</p>
+
+                <div class="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
+                  <span class="text-xs text-gray-400 font-medium uppercase tracking-wide">Tiêu chuẩn quốc tế</span>
+                  <a th:href="@{/booking}" class="text-blue-600 text-sm font-semibold hover:underline">Đặt ngay &rarr;</a>
+                </div>
               </div>
             </div>
           </div>
+
+          <div th:if="${courts == null or courts.isEmpty()}" class="text-center py-10 text-gray-500">
+            <p>Chưa có dữ liệu sân.</p>
+          </div>
+
           <div class="text-center mt-12">
-            <a th:href="@{/booking}" class="bg-gray-700 text-white px-6 py-2 rounded-lg text-md font-semibold hover:bg-gray-800 transition-colors">Xem tất cả các sân</a>
+            <a th:href="@{/booking}" class="inline-block border border-gray-300 bg-white text-gray-700 px-6 py-2 rounded-lg font-medium hover:bg-gray-50 transition-colors">
+              Xem lịch trống
+            </a>
           </div>
         </div>
       </div>
     </main>
 
-    <footer class="bg-gray-800 text-gray-300 mt-16">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div>
-            <h5 class="text-lg font-bold text-white mb-4">Về chúng tôi</h5>
-            <p class="text-sm">Hệ thống sân cầu lông hiện đại, chất lượng cao, phục vụ đam mê thể thao của bạn.</p>
+    <footer class="bg-white border-t border-gray-200 pt-10 pb-6">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+          <div class="col-span-1 md:col-span-1">
+            <div class="flex items-center space-x-2 mb-4">
+              <i data-lucide="activity" class="w-6 h-6 text-blue-600"></i>
+              <span class="text-lg font-bold text-gray-800">Badminton Court</span>
+            </div>
+            <p class="text-sm text-gray-500 leading-relaxed">Hệ thống sân cầu lông hiện đại, chất lượng cao, phục vụ đam mê thể thao của bạn mọi lúc mọi nơi.</p>
           </div>
+
           <div>
-            <h5 class="text-lg font-bold text-white mb-4">Liên kết nhanh</h5>
-            <ul class="space-y-2 text-sm">
-              <li><a th:href="@{/}" class="hover:text-white">Trang chủ</a></li>
-              <li>
-                <a th:href="@{/booking}" class="hover:text-white">Đặt sân</a>
-              </li>
-              <li><a href="#" class="hover:text-white">Khuyến mãi</a></li>
-              <li><a href="#" class="hover:text-white">Liên hệ</a></li>
+            <h5 class="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">Liên kết</h5>
+            <ul class="space-y-2 text-sm text-gray-600">
+              <li><a th:href="@{/}" class="hover:text-blue-600">Trang chủ</a></li>
+              <li><a th:href="@{/booking}" class="hover:text-blue-600">Đặt sân</a></li>
+              <li><a href="#" class="hover:text-blue-600">Bảng giá</a></li>
             </ul>
           </div>
+
           <div>
-            <h5 class="text-lg font-bold text-white mb-4">Liên hệ</h5>
-            <ul class="space-y-2 text-sm">
+            <h5 class="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">Hỗ trợ</h5>
+            <ul class="space-y-2 text-sm text-gray-600">
+              <li><a href="#" class="hover:text-blue-600">Điều khoản sử dụng</a></li>
+              <li><a href="#" class="hover:text-blue-600">Chính sách bảo mật</a></li>
+              <li><a href="#" class="hover:text-blue-600">Câu hỏi thường gặp</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <h5 class="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">Liên hệ</h5>
+            <ul class="space-y-2 text-sm text-gray-600">
               <li class="flex items-center">
-                <i data-lucide="map-pin" class="w-4 h-4 mr-2"></i>
-                123 Đường ABC, Quận 1, TP. HCM
+                <i data-lucide="map-pin" class="w-4 h-4 mr-2 text-gray-400"></i>
+                PTIT, Hà Đông, Hà Nội
               </li>
               <li class="flex items-center">
-                <i data-lucide="phone" class="w-4 h-4 mr-2"></i>
+                <i data-lucide="phone" class="w-4 h-4 mr-2 text-gray-400"></i>
                 (028) 3812 3456
               </li>
               <li class="flex items-center">
-                <i data-lucide="mail" class="w-4 h-4 mr-2"></i>
-                support@sancaulong.com
+                <i data-lucide="mail" class="w-4 h-4 mr-2 text-gray-400"></i>
+                support@court.vn
               </li>
             </ul>
           </div>
-          <div>
-            <h5 class="text-lg font-bold text-white mb-4">Theo dõi chúng tôi</h5>
-            <div class="flex space-x-4"></div>
-          </div>
         </div>
-        <div class="mt-8 border-t border-gray-700 pt-8 text-center text-sm">
-          <p>&copy; 2025 Badminton Court. All rights reserved.</p>
-        </div>
+
+        <div class="border-t border-gray-100 pt-6 text-center text-sm text-gray-400">&copy; 2025 Badminton Court System. All rights reserved.</div>
       </div>
     </footer>
 
     <div
       th:if="${notificationMessage}"
-      th:classappend="${notificationType == 'success'} ? 'bg-green-500' : (${notificationType == 'error'} ? 'bg-red-500' : 'bg-blue-500')"
-      class="fixed bottom-5 right-5 p-4 rounded-lg shadow-lg text-white z-50"
+      th:classappend="${notificationType == 'success'} ? 'bg-green-600' : (${notificationType == 'error'} ? 'bg-red-600' : 'bg-blue-600')"
+      class="fixed bottom-5 right-5 px-6 py-3 rounded-lg shadow-lg text-white text-sm font-medium z-50 animate-[fade-in_0.3s_ease-out]"
     >
-      <p th:text="${notificationMessage}"></p>
+      <div class="flex items-center gap-2">
+        <i th:if="${notificationType == 'success'}" data-lucide="check-circle" class="w-5 h-5"></i>
+        <i th:if="${notificationType == 'error'}" data-lucide="alert-circle" class="w-5 h-5"></i>
+        <span th:text="${notificationMessage}">Thông báo</span>
+      </div>
     </div>
 
     <script>

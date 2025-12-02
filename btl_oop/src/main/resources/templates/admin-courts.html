@@ -6,222 +6,154 @@
     <title>Admin - Quản lý Lịch Sân</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-    <style>
-      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
-      body {
-        font-family: "Inter", sans-serif;
-      }
-
-      /* CSS cho phần Main mới */
-      .hide-scrollbar::-webkit-scrollbar {
-        display: none;
-      }
-      .hide-scrollbar {
-        -ms-overflow-style: none;
-        scrollbar-width: none;
-      }
-      .animate-in {
-        animation: fade-in 0.3s ease-out;
-      }
-      @keyframes fade-in {
-        from {
-          opacity: 0;
-          transform: scale(0.95);
-        }
-        to {
-          opacity: 1;
-          transform: scale(1);
-        }
-      }
-    </style>
   </head>
-  <body class="bg-gray-100">
-    <div class="flex h-screen">
-      <aside class="bg-gray-800 text-gray-300 w-64 transition-all duration-300 flex flex-col flex-shrink-0">
-        <div class="flex items-center justify-center h-16 border-b border-gray-700">
-          <span class="text-xl font-bold text-white">Quản Trị</span>
-        </div>
-        <nav class="flex-1 px-4 py-6 space-y-2">
-          <a th:href="@{/admin}" class="flex items-center w-full px-4 py-2 rounded-lg transition-colors text-gray-300 hover:bg-gray-700 hover:text-white">
-            <i data-lucide="bar-chart-2" class="w-5 h-5"></i>
-            <span class="ml-3">Tổng quan</span>
-          </a>
-          <a th:href="@{/admin/courts}" class="flex items-center w-full px-4 py-2 rounded-lg transition-colors bg-blue-600 text-white">
-            <i data-lucide="calendar" class="w-5 h-5"></i>
-            <span class="ml-3">Quản lý Lịch Sân</span>
-          </a>
-          <a th:href="@{/admin/pricing}" class="flex items-center w-full px-4 py-2 rounded-lg transition-colors text-gray-300 hover:bg-gray-700 hover:text-white">
-            <i data-lucide="tag" class="w-5 h-5"></i>
-            <span class="ml-3">Quản lý Giá</span>
-          </a>
-          <a th:href="@{/admin/customers}" class="flex items-center w-full px-4 py-2 rounded-lg transition-colors text-gray-300 hover:bg-gray-700 hover:text-white">
-            <i data-lucide="users" class="w-5 h-5"></i>
-            <span class="ml-3">Khách hàng</span>
-          </a>
-        </nav>
-        <div class="px-4 py-4 border-t border-gray-700">
-          <a th:href="@{/logout}" class="flex items-center w-full px-4 py-2 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white">
-            <i data-lucide="log-out" class="w-5 h-5"></i>
-            <span class="ml-3">Đăng xuất</span>
-          </a>
-        </div>
-      </aside>
-
-      <div class="flex-1 flex flex-col overflow-hidden">
-        <header class="bg-white shadow-sm border-b border-gray-200">
-          <div class="flex items-center justify-between h-16 px-6" th:if="${isAuthenticated}">
-            <button class="text-gray-600"><i data-lucide="menu"></i></button>
-            <div class="flex items-center space-x-4">
-              <span class="text-gray-700 font-medium" th:text="'Chào, ' + ${currentUser}">Admin</span>
-            </div>
-          </div>
-        </header>
-
-        <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
-          <div class="flex flex-col h-full gap-4">
-            <div class="flex flex-col md:flex-row justify-between items-end md:items-center gap-4 bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-              <div class="flex gap-6 text-sm">
-                <div class="flex items-center gap-2">
-                  <span class="flex h-3 w-3 relative">
-                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
-                  </span>
-                  <span class="text-gray-600">
-                    Đã đặt:
-                    <b class="text-gray-900 text-base" id="countBooked">0</b>
-                  </span>
-                </div>
-                <div class="flex items-center gap-2">
-                  <span class="w-3 h-3 rounded-full bg-gray-300 border border-gray-400"></span>
-                  <span class="text-gray-600">
-                    Trống:
-                    <b class="text-gray-900 text-base" id="countFree">0</b>
-                  </span>
-                </div>
-              </div>
-
-              <div class="flex items-center bg-gray-50 rounded-lg p-1 border border-gray-200">
-                <button onclick="changeDate(-1)" class="p-2 hover:bg-white rounded-md text-gray-500 hover:text-blue-600 hover:shadow-sm transition-all" title="Ngày trước">
-                  <i data-lucide="chevron-left" class="w-5 h-5"></i>
-                </button>
-                <div class="relative mx-2">
-                  <input
-                    type="date"
-                    id="selectedDate"
-                    class="bg-transparent border-none text-sm font-bold text-gray-700 focus:ring-0 cursor-pointer text-center font-mono tracking-tight"
-                  />
-                </div>
-                <button onclick="changeDate(1)" class="p-2 hover:bg-white rounded-md text-gray-500 hover:text-blue-600 hover:shadow-sm transition-all" title="Ngày sau">
-                  <i data-lucide="chevron-right" class="w-5 h-5"></i>
-                </button>
-              </div>
-            </div>
-
-            <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden relative flex flex-col flex-1">
-              <div class="overflow-auto hide-scrollbar flex-1">
-                <table class="min-w-full border-separate border-spacing-0 text-sm">
-                  <thead class="bg-gray-50 sticky top-0 z-30 shadow-sm">
-                    <tr>
-                      <th
-                        class="sticky left-0 z-40 bg-gray-50 border-b border-r border-gray-200 px-4 py-4 text-gray-600 font-bold text-center min-w-[120px] text-xs uppercase tracking-wider"
-                      >
-                        Sân / Giờ
-                      </th>
-                      <th
-                        th:each="c : ${#numbers.sequence(0,23)}"
-                        class="border-b border-r border-gray-200 px-2 py-3 font-semibold text-gray-500 text-center min-w-[80px] bg-gray-50"
-                      >
-                        <span th:text="${c < 10 ? '0' + c : c}"></span>
-                        :00
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody class="divide-y divide-gray-100">
-                    <tr th:each="court : ${#numbers.sequence(1,6)}" class="hover:bg-blue-50/30 transition-colors group">
-                      <td
-                        class="sticky left-0 z-20 bg-white group-hover:bg-blue-50/30 border-r border-gray-200 px-4 py-3 font-bold text-gray-800 text-center shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]"
-                      >
-                        <div class="flex items-center justify-center gap-2">
-                          <span class="w-1 h-6 rounded-full bg-blue-600"></span>
-                          Sân
-                          <span th:text="${court}"></span>
-                        </div>
-                      </td>
-                      <td
-                        th:each="slot : ${#numbers.sequence(0,23)}"
-                        th:id="${court + '_' + slot}"
-                        class="border-r border-gray-100 p-1 relative h-16 transition-all duration-200"
-                      ></td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </main>
+  <body class="bg-gray-100 text-gray-800 font-sans h-screen flex overflow-hidden">
+    <aside class="bg-gray-800 text-gray-300 w-64 transition-all duration-300 flex flex-col flex-shrink-0">
+      <div class="flex items-center justify-center h-16 border-b border-gray-700 gap-3">
+        <i data-lucide="shield-check" class="w-6 h-6 text-blue-500"></i>
+        <span class="text-xl font-bold text-white tracking-wide">Quản Trị</span>
       </div>
+      <nav class="flex-1 px-4 py-6 space-y-2">
+        <a th:href="@{/admin}" class="flex items-center w-full px-4 py-2 rounded-lg transition-colors text-gray-300 hover:bg-gray-700 hover:text-white">
+          <i data-lucide="bar-chart-2" class="w-5 h-5"></i>
+          <span class="ml-3">Tổng quan</span>
+        </a>
+        <a th:href="@{/admin/courts}" class="flex items-center w-full px-4 py-2 rounded-lg transition-colors bg-blue-600 text-white">
+          <i data-lucide="calendar" class="w-5 h-5"></i>
+          <span class="ml-3">Quản lý Lịch Sân</span>
+        </a>
+        <a th:href="@{/admin/pricing}" class="flex items-center w-full px-4 py-2 rounded-lg transition-colors text-gray-300 hover:bg-gray-700 hover:text-white">
+          <i data-lucide="tag" class="w-5 h-5"></i>
+          <span class="ml-3">Quản lý Giá</span>
+        </a>
+        <a th:href="@{/admin/customers}" class="flex items-center w-full px-4 py-2 rounded-lg transition-colors text-gray-300 hover:bg-gray-700 hover:text-white">
+          <i data-lucide="users" class="w-5 h-5"></i>
+          <span class="ml-3">Khách hàng</span>
+        </a>
+      </nav>
+      <div class="px-4 py-4 border-t border-gray-700">
+        <a th:href="@{/logout}" class="flex items-center w-full px-4 py-2 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white">
+          <i data-lucide="log-out" class="w-5 h-5"></i>
+          <span class="ml-3">Đăng xuất</span>
+        </a>
+      </div>
+    </aside>
+
+    <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <header class="bg-white shadow-sm border-b border-gray-200 h-16 flex-shrink-0">
+        <div class="flex items-center justify-between h-full px-6" th:if="${isAuthenticated}">
+          <button class="text-gray-600"><i data-lucide="menu"></i></button>
+          <div class="flex items-center space-x-4">
+            <span class="text-gray-700 font-medium" th:text="'Chào, ' + ${currentUser}">Admin</span>
+          </div>
+        </div>
+      </header>
+
+      <main class="flex-1 flex flex-col p-4 sm:p-6 overflow-hidden bg-gray-100">
+        <div class="flex flex-col md:flex-row justify-between items-end md:items-center gap-4 bg-white p-4 rounded-xl border border-gray-200 shadow-sm mb-4 flex-shrink-0">
+          <div class="flex gap-6 text-sm">
+            <div class="flex items-center gap-2">
+              <span class="relative flex h-3 w-3">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+              </span>
+              <span class="text-gray-600">
+                Đã đặt:
+                <b class="text-gray-900 text-base ml-1" id="countBooked">0</b>
+              </span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full bg-gray-300 border border-gray-400"></span>
+              <span class="text-gray-600">
+                Trống:
+                <b class="text-gray-900 text-base ml-1" id="countFree">0</b>
+              </span>
+            </div>
+          </div>
+
+          <div class="flex items-center bg-gray-50 rounded-lg p-1 border border-gray-200">
+            <button onclick="changeDate(-1)" class="p-2 hover:bg-white rounded-md text-gray-500 hover:text-blue-600 transition-all">
+              <i data-lucide="chevron-left" class="w-5 h-5"></i>
+            </button>
+            <input
+              type="date"
+              id="selectedDate"
+              class="bg-transparent border-none text-sm font-bold text-gray-700 focus:ring-0 cursor-pointer text-center w-32 outline-none mx-2"
+            />
+            <button onclick="changeDate(1)" class="p-2 hover:bg-white rounded-md text-gray-500 hover:text-blue-600 transition-all">
+              <i data-lucide="chevron-right" class="w-5 h-5"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="bg-white border border-gray-200 rounded-xl shadow-sm flex-1 overflow-auto relative w-full">
+          <table class="min-w-full border-separate border-spacing-0 text-sm">
+            <thead class="bg-gray-50 sticky top-0 z-20 shadow-sm">
+              <tr>
+                <th class="sticky left-0 top-0 z-30 bg-gray-50 border-b border-r border-gray-200 px-4 py-3 text-gray-600 font-bold text-center min-w-[100px]">Sân / Giờ</th>
+                <th
+                  th:each="c : ${#numbers.sequence(0,23)}"
+                  class="sticky top-0 z-20 bg-gray-50 border-b border-r border-gray-200 px-2 py-3 font-medium text-gray-500 min-w-[80px] text-center"
+                >
+                  <span th:text="${c < 10 ? '0'+c : c}"></span>
+                  :00
+                </th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-100">
+              <tr th:each="court : ${#numbers.sequence(1,6)}">
+                <td class="sticky left-0 z-10 bg-white border-r border-b border-gray-100 px-4 py-3 font-bold text-blue-600 text-center shadow-[4px_0_10px_-4px_rgba(0,0,0,0.1)]">
+                  Sân
+                  <span th:text="${court}"></span>
+                </td>
+                <td
+                  th:each="slot : ${#numbers.sequence(0,23)}"
+                  th:id="${court + '_' + slot}"
+                  class="border-r border-b border-gray-100 p-1 relative h-16 min-w-[80px] transition-colors"
+                ></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </main>
     </div>
 
-    <div id="bookingModal" class="fixed inset-0 z-50 hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-      <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity" onclick="closeModal()"></div>
-      <div class="flex min-h-full items-center justify-center p-4">
-        <div class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-2xl transition-all sm:w-full sm:max-w-md animate-in">
-          <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4 flex justify-between items-center">
-            <h3 class="text-lg font-bold text-white flex items-center gap-2">
+    <div id="bookingModal" class="fixed inset-0 z-50 hidden" role="dialog">
+      <div class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm" onclick="closeModal()"></div>
+      <div class="flex min-h-full items-center justify-center p-4 absolute inset-0 pointer-events-none">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md pointer-events-auto transform transition-all">
+          <div class="bg-blue-600 px-6 py-4 rounded-t-xl flex justify-between items-center text-white">
+            <h3 class="font-bold flex items-center gap-2">
               <i data-lucide="info" class="w-5 h-5"></i>
-              Chi tiết Đặt sân
+              Chi tiết
             </h3>
-            <button onclick="closeModal()" class="text-blue-100 hover:text-white hover:bg-white/20 rounded-full p-1 transition-colors">
-              <i data-lucide="x" class="w-5 h-5"></i>
-            </button>
+            <button onclick="closeModal()" class="hover:bg-blue-700 p-1 rounded-full"><i data-lucide="x" class="w-5 h-5"></i></button>
           </div>
-
-          <div class="px-6 py-6 space-y-5">
+          <div class="p-6 space-y-4">
             <div class="flex items-center gap-4">
-              <div class="h-14 w-14 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-xl font-bold border-4 border-blue-50" id="modalAvatar">A</div>
+              <div class="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-lg" id="modalAvatar">U</div>
               <div>
-                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide">Khách hàng</p>
-                <h4 class="text-xl font-bold text-gray-900" id="modalName">Nguyễn Văn A</h4>
+                <p class="text-xs text-gray-400 font-bold uppercase">Khách hàng</p>
+                <h4 class="text-lg font-bold text-gray-800" id="modalName">...</h4>
               </div>
             </div>
-
-            <div class="border-t border-gray-100 my-2"></div>
-
-            <div class="space-y-3">
-              <div class="flex items-center p-3 bg-gray-50 rounded-lg border border-gray-100">
-                <div class="p-2 bg-white rounded-md shadow-sm text-blue-600 mr-3"><i data-lucide="phone" class="w-4 h-4"></i></div>
-                <div>
-                  <p class="text-xs text-gray-500">Số điện thoại</p>
-                  <p class="font-semibold text-gray-800" id="modalPhone">...</p>
-                </div>
+            <div class="grid grid-cols-2 gap-4 pt-4 border-t border-gray-100">
+              <div>
+                <p class="text-xs text-gray-500">Số điện thoại</p>
+                <p class="font-medium" id="modalPhone">...</p>
               </div>
-
-              <div class="flex items-center p-3 bg-gray-50 rounded-lg border border-gray-100">
-                <div class="p-2 bg-white rounded-md shadow-sm text-emerald-600 mr-3"><i data-lucide="banknote" class="w-4 h-4"></i></div>
-                <div>
-                  <p class="text-xs text-gray-500">Giá tiền</p>
-                  <p class="font-semibold text-gray-800" id="modalPrice">...</p>
-                </div>
+              <div>
+                <p class="text-xs text-gray-500">Giá tiền</p>
+                <p class="font-bold text-green-600" id="modalPrice">...</p>
               </div>
-
-              <div class="flex items-center p-3 bg-gray-50 rounded-lg border border-gray-100">
-                <div class="p-2 bg-white rounded-md shadow-sm text-orange-600 mr-3"><i data-lucide="calendar-clock" class="w-4 h-4"></i></div>
-                <div>
-                  <p class="text-xs text-gray-500">Thời gian</p>
-                  <p class="font-semibold text-gray-800" id="modalTime">...</p>
-                </div>
+              <div class="col-span-2">
+                <p class="text-xs text-gray-500">Thời gian</p>
+                <p class="font-medium" id="modalTime">...</p>
               </div>
             </div>
           </div>
-
-          <div class="bg-gray-50 px-6 py-4 flex justify-end">
-            <button
-              type="button"
-              onclick="closeModal()"
-              class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-100 transition-colors shadow-sm"
-            >
-              Đóng
-            </button>
+          <div class="bg-gray-50 px-6 py-4 rounded-b-xl text-right">
+            <button onclick="closeModal()" class="px-4 py-2 bg-white border border-gray-300 rounded text-gray-700 font-medium hover:bg-gray-100">Đóng</button>
           </div>
         </div>
       </div>
@@ -229,100 +161,135 @@
 
     <script>
       lucide.createIcons();
-
       const dateInput = document.getElementById("selectedDate");
       const modal = document.getElementById("bookingModal");
 
-      // Init Date
-      dateInput.value = new Date().toLocaleDateString("en-CA");
+      // Class tailwind
+      const cls_base = "border-r border-b border-gray-100 h-16 min-w-[80px] p-1 relative transition-colors text-center";
+      const cls_empty = cls_base + " hover:bg-gray-50 cursor-default";
+      const cls_past = cls_base + " bg-gray-200 cursor-not-allowed text-gray-500";
+      const cls_booked = cls_base + " bg-emerald-50 border-emerald-100 cursor-pointer hover:bg-emerald-100 text-emerald-800";
+      const cls_booked_past = cls_base + " bg-gray-300 border-gray-400 cursor-pointer text-gray-600"; // Booked nhưng đã qua
 
-      // Hàm đổi ngày nhanh
-      function changeDate(days) {
-        const current = new Date(dateInput.value);
-        current.setDate(current.getDate() + days);
-        dateInput.value = current.toISOString().split("T")[0];
-        loadSchedule();
-      }
+      const tableDOM = [];
 
-      // Hàm tải dữ liệu
-      async function loadSchedule() {
-        const date = dateInput.value;
-        let bookedCount = 0;
-
-        // Reset các ô về trạng thái trống
-        document.querySelectorAll("td[id^='1_'], td[id^='2_'], td[id^='3_'], td[id^='4_'], td[id^='5_'], td[id^='6_']").forEach((td) => {
-          td.innerHTML = "";
-          td.className = "border-r border-gray-100 p-1 relative h-16 transition-all duration-200 hover:bg-gray-50 cursor-default";
-          td.onclick = null;
-        });
-
-        try {
-          const res = await fetch(`/slots/booked?date=${date}`);
-          const data = await res.json();
-
-          data.forEach((item) => {
-            bookedCount++;
-            const courtId = item.courId || item.courtId;
-            const slotIndex = item.slotId - 1;
-
-            const cell = document.getElementById(`${courtId}_${slotIndex}`);
-
-            if (cell) {
-              // Giao diện ô Đã Đặt (Card xanh ngọc)
-              cell.className = "border-r border-gray-100 p-1 h-16 cursor-pointer";
-
-              const priceFormatted = new Intl.NumberFormat("vi-VN").format(item.price);
-
-              cell.innerHTML = `
-                        <div class="w-full h-full bg-emerald-50 border border-emerald-200 rounded-md flex flex-col items-center justify-center group hover:bg-emerald-100 hover:shadow-md transition-all relative overflow-hidden">
-                            <div class="absolute top-0 left-0 w-1 h-full bg-emerald-500"></div>
-                            <span class="text-[11px] font-bold text-emerald-800 truncate w-full px-1 text-center">${item.fullName}</span>
-                            <span class="text-[9px] text-emerald-600 font-mono mt-0.5">${priceFormatted}đ</span>
-                        </div>
-                    `;
-
-              // Sự kiện mở Modal
-              cell.onclick = () =>
-                openModal({
-                  name: item.fullName,
-                  phone: item.phone,
-                  price: priceFormatted,
-                  court: courtId,
-                  time: `${slotIndex}:00 - ${slotIndex + 1}:00`,
-                });
-            }
-          });
-
-          // Cập nhật số liệu thống kê
-          document.getElementById("countBooked").innerText = bookedCount;
-          document.getElementById("countFree").innerText = 6 * 24 - bookedCount;
-        } catch (error) {
-          console.error("Lỗi tải lịch:", error);
+      function initTableDOM() {
+        for (let c = 1; c <= 6; c++) {
+          const row = [];
+          for (let s = 0; s < 24; s++) {
+            const cell = document.getElementById(c + "_" + s); // Dùng cộng chuỗi
+            row.push(cell);
+          }
+          tableDOM.push(row);
         }
       }
 
-      // Logic Modal
-      function openModal(data) {
-        document.getElementById("modalName").innerText = data.name;
-        document.getElementById("modalPhone").innerText = data.phone;
-        document.getElementById("modalPrice").innerText = data.price + " đ";
-        document.getElementById("modalTime").innerText = `Sân ${data.court} • ${data.time}`;
-        document.getElementById("modalAvatar").innerText = data.name.charAt(0).toUpperCase();
+      dateInput.value = new Date().toLocaleDateString("en-CA");
 
-        modal.classList.remove("hidden");
+      function changeDate(days) {
+        const d = new Date(dateInput.value);
+        d.setDate(d.getDate() + days);
+        dateInput.value = d.toISOString().split("T")[0];
+        loadSchedule();
+      }
+
+      async function loadSchedule() {
+        const selectedDateStr = dateInput.value;
+        const selectedDate = new Date(selectedDateStr);
+        selectedDate.setHours(0, 0, 0, 0);
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const currentHour = new Date().getHours();
+
+        // Kiểm tra xem ngày chọn có phải quá khứ không
+        const isPastDate = selectedDate < today;
+        const isToday = selectedDate.getTime() === today.getTime();
+
+        let count = 0;
+
+        // 1. Reset về mặc định
+        for (let r = 0; r < tableDOM.length; r++) {
+          for (let c = 0; c < tableDOM[r].length; c++) {
+            const cell = tableDOM[r][c];
+            if (cell) {
+              cell.innerHTML = "";
+              cell.onclick = null;
+
+              // Logic check quá khứ
+              if (isPastDate || (isToday && c < currentHour)) {
+                cell.className = cls_past;
+              } else {
+                cell.className = cls_empty;
+              }
+            }
+          }
+        }
+
+        try {
+          // 2. Load dữ liệu đã đặt
+          const res = await fetch("/slots/booked?date=" + selectedDateStr); // Dùng cộng chuỗi
+          const data = await res.json();
+
+          data.forEach((item) => {
+            count++;
+            const court = (item.courId || item.courtId) - 1;
+            const slot = item.slotId - 1;
+
+            if (tableDOM[court] && tableDOM[court][slot]) {
+              const cell = tableDOM[court][slot];
+
+              // Check xem booking này đã qua giờ chưa để chỉnh màu
+              const isBookingPast = isPastDate || (isToday && slot < currentHour);
+
+              if (isBookingPast) {
+                cell.className = cls_booked_past;
+              } else {
+                cell.className = cls_booked;
+              }
+
+              const price = new Intl.NumberFormat("vi-VN").format(item.price);
+
+              // Dùng cộng chuỗi HTML
+              cell.innerHTML =
+                '<div class="w-full h-full flex flex-col items-center justify-center overflow-hidden">' +
+                '<span class="text-[11px] font-bold truncate w-full px-1">' +
+                item.fullName +
+                "</span>" +
+                '<span class="text-[10px] font-mono opacity-80">' +
+                price +
+                "đ</span>" +
+                "</div>";
+
+              cell.onclick = function () {
+                document.getElementById("modalName").innerText = item.fullName;
+                document.getElementById("modalAvatar").innerText = item.fullName.charAt(0).toUpperCase();
+                document.getElementById("modalPhone").innerText = item.phone;
+                document.getElementById("modalPrice").innerText = price + " đ";
+                // Sửa lỗi biến courtIdx/slotIdx thành court/slot
+                document.getElementById("modalTime").innerText = "Sân " + (court + 1) + " • " + slot + ":00 - " + (slot + 1) + ":00";
+                modal.classList.remove("hidden");
+              };
+            }
+          });
+
+          document.getElementById("countBooked").innerText = count;
+          document.getElementById("countFree").innerText = 6 * 24 - count;
+        } catch (e) {
+          console.error("Lỗi tải lịch:", e);
+        }
       }
 
       function closeModal() {
         modal.classList.add("hidden");
       }
 
-      // Event Listeners
       dateInput.addEventListener("change", loadSchedule);
       document.addEventListener("keydown", (e) => {
         if (e.key === "Escape") closeModal();
       });
 
-      // Start
+      initTableDOM();
       loadSchedule();
     </script>
   </body>
