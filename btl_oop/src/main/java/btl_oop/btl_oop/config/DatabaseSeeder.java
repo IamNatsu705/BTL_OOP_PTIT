@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -90,7 +91,7 @@ public class DatabaseSeeder implements CommandLineRunner {
         courts.add(createCourt("Sân 2 (Thảm Xịn)", "available", "Thảm Yonex độ nảy tốt."));
         courts.add(createCourt("Sân 3 (Thường)", "available", "Sân tiêu chuẩn tập luyện."));
         courts.add(createCourt("Sân 4 (Thường)", "available", "Sân tiêu chuẩn tập luyện."));
-        courts.add(createCourt("Sân 5 (Ngoài trời)", "maintenance", "Đang sửa mái che."));
+        courts.add(createCourt("Sân 5 (Ngoài trời)", "available", "Đang sửa mái che."));
         courts.add(createCourt("Sân 6 (VIP 2)", "available", "Khu vực riêng tư, có điều hòa."));
         courtRepo.saveAll(courts);
     }
@@ -189,7 +190,12 @@ public class DatabaseSeeder implements CommandLineRunner {
                     sb.setSlot(slot);
                     sb.setBookingDate(date);
                     sb.setPrice(slot.getTypeSlots().getPrice());
-                    
+                    LocalDateTime createdDateTime = date.atTime(
+                        rand.nextInt(24),           // Random giờ 0-23
+                        rand.nextInt(60),           // Random phút 0-59
+                        rand.nextInt(60)            // Random giây 0-59
+                    );
+                    bill.setCreatedAt(createdDateTime);
                     details.add(sb);
                     total = total.add(sb.getPrice());
                 }

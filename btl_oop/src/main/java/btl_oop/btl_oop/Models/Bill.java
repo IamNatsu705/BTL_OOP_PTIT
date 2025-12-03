@@ -32,6 +32,8 @@ public class Bill {
 
     @PrePersist
     public void onCreate() {
-        this.createdAt = LocalDateTime.now();
+        if (createdAt == null){
+            this.createdAt = LocalDateTime.now();
+        } // Tự động lấy giờ hiện tại khi lưu
     }
 }
