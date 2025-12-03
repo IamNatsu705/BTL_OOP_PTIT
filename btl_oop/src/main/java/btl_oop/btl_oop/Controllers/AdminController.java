@@ -53,20 +53,12 @@ public class AdminController {
 
         long totalBookings = allBills.size();
 
-        // 3. Thống kê HÔM NAY (Giả định đơn giản)
-        // Để chính xác cần viết Query trong Repository: findByDate...
-        // Ở đây mình lấy ví dụ số liệu mẫu hoặc tính sơ bộ
         LocalDateTime start = LocalDate.now().atStartOfDay();
         LocalDateTime end   = LocalDate.now().atTime(23, 59, 59);
-        long todayBookings = billRepo.findByCreatedAtBetween(start, end).size(); // Ví dụ: Cần query DB đếm số bill created_at hôm nay
+        long todayBookings = billRepo.findByCreatedAtBetween(start, end).size();
         List<BigDecimal> todayRevenues = billRepo.findByCreatedAtBetween(start, end).stream().map(Bill::getTotalAmount).collect(Collectors.toList()); 
         BigDecimal todayRevenue = new BigDecimal("0");
         for (BigDecimal x: todayRevenues) todayRevenue = todayRevenue.add(x);
-        // 4. Trạng thái SÂN NGAY LÚC NÀY (Real-time)
-        // Logic: Lấy giờ hiện tại -> Check xem bao nhiêu sân đang có khách
-        // (Tạm thời hardcode hoặc gọi service check)
-        long courtsOccupied = courtSlotService.getCourtAvailable(); 
-        long totalCourts = courtSlotService.getAllCourts().size();
         List<Court> courts = courtSlotService.getAllCourts();
         // Gửi sang View
         model.addAttribute("totalCustomers", totalCustomers);
@@ -90,8 +82,6 @@ public class AdminController {
         return "admin-courts";
     }
 
-    // Các trang admin con khác (Pricing, Customers...) bạn cứ giữ nguyên mockup tạm thời
-    // hoặc update dần sau.
     @GetMapping("/admin/pricing")
     public String adminPricing(Model model,HttpSession session) {
         if (!isAdmin(session)) {
@@ -117,22 +107,18 @@ public class AdminController {
         return "redirect:/admin/pricing";
     }
 
-    // --- 2. CẤU HÌNH LOẠI GIÁ CHO TỪNG SLOT (MỚI) ---
-    // Chúng ta dùng Map<String, String> để hứng tất cả các ô select gửi lên
-    // Key sẽ là "slot_1", "slot_2"... Value là ID của TypeSlot (ví dụ "1", "2")
     @PostMapping("/admin/pricing/configure")
     public String configureSchedule(@RequestParam Map<String, String> allParams,HttpSession session) {
         if (!isAdmin(session)) {
             return "redirect:/"; 
         }
-        // Duyệt qua tất cả tham số gửi lên
         for (Map.Entry<String, String> entry : allParams.entrySet()) {
-            String key = entry.getKey();   // Ví dụ: "slot_5" (5 là id của slot)
-            String value = entry.getValue(); // Ví dụ: "2" (2 là id của TypeSlot)
+            String key = entry.getKey();
+            String value = entry.getValue(); 
 
             if (key.startsWith("slot_")) {
                 try {
-                    Long slotId = Long.parseLong(key.substring(5)); // Lấy số 5 ra
+                    Long slotId = Long.parseLong(key.substring(5));
                     Long typeId = Long.parseLong(value);
 
                     Slot slot = slotRepo.findById(slotId).orElse(null);

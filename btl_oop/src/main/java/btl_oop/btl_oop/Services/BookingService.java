@@ -29,7 +29,6 @@ public class BookingService {
         this.courtRepo = courtRepo;
     }
 
-    // @Transactional: Nếu có lỗi xảy ra ở giữa chừng, nó sẽ hủy toàn bộ thao tác (không lưu Bill rác)
     @Transactional
     public Bill createBooking(Long userId, Long courtId, LocalDate bookingDate, List<Long> slotIds) {
         User user = userRepo.findById(userId)

@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -90,7 +91,7 @@ public class DatabaseSeeder implements CommandLineRunner {
         courts.add(createCourt("Sân 2 (Thảm Xịn)", "available", "Thảm Yonex độ nảy tốt."));
         courts.add(createCourt("Sân 3 (Thường)", "available", "Sân tiêu chuẩn tập luyện."));
         courts.add(createCourt("Sân 4 (Thường)", "available", "Sân tiêu chuẩn tập luyện."));
-        courts.add(createCourt("Sân 5 (Ngoài trời)", "maintenance", "Đang sửa mái che."));
+        courts.add(createCourt("Sân 5 (Ngoài trời)", "available", "Đang sửa mái che."));
         courts.add(createCourt("Sân 6 (VIP 2)", "available", "Khu vực riêng tư, có điều hòa."));
         courtRepo.saveAll(courts);
     }
@@ -144,14 +145,12 @@ public class DatabaseSeeder implements CommandLineRunner {
         List<Court> courts = courtRepo.findAll();
         List<Slot> allSlots = slotRepo.findAll();
         
-        // Chỉ lấy user thường, bỏ admin ra khỏi danh sách đặt sân cho thực tế
         List<User> customers = users.stream().filter(u -> "USER".equals(u.getRole())).toList();
 
         Random rand = new Random();
         
         // Tạo 50 đơn hàng
         for (int i = 0; i < 50; i++) {
-            // Random ngày: từ 7 ngày trước đến 3 ngày sau
             LocalDate date = LocalDate.now().minusDays(rand.nextInt(7)).plusDays(rand.nextInt(3));
             
             User randomUser = customers.get(rand.nextInt(customers.size()));
@@ -169,17 +168,10 @@ public class DatabaseSeeder implements CommandLineRunner {
 
             for (int j = 0; j < numberOfSlots; j++) {
                 Slot slot = allSlots.get(startSlotIndex + j);
-
-                // Check sơ bộ xem đã có ai đặt chưa (trong logic seed đơn giản này có thể bỏ qua, 
-                // nhưng check để tránh lỗi constraint unique nếu có)
                 boolean isBooked = !slotBookedRepo.findByBookingDateAndCourtId(date, randomCourt.getId()).isEmpty();
-                // Nếu slot này giờ này đã full rồi thì bỏ qua lượt này (để đơn giản)
-                // Tuy nhiên đây là seed nên mình cứ liều tạo, nếu trùng database sẽ báo lỗi dòng sau,
-                // Để an toàn mình dùng try-catch cho từng bill
             }
 
             try {
-                 // Logic tạo thật
                 for (int j = 0; j < numberOfSlots; j++) {
                     Slot slot = allSlots.get(startSlotIndex + j);
                     
@@ -189,7 +181,12 @@ public class DatabaseSeeder implements CommandLineRunner {
                     sb.setSlot(slot);
                     sb.setBookingDate(date);
                     sb.setPrice(slot.getTypeSlots().getPrice());
-                    
+                    LocalDateTime createdDateTime = date.atTime(
+                        rand.nextInt(24),          
+                        rand.nextInt(60),           
+                        rand.nextInt(60)          
+                    );
+                    bill.setCreatedAt(createdDateTime);
                     details.add(sb);
                     total = total.add(sb.getPrice());
                 }
@@ -197,11 +194,9 @@ public class DatabaseSeeder implements CommandLineRunner {
                 bill.setTotalAmount(total);
                 bill.setSlotBookedList(details);
                 
-                // Lưu bill (Cascade sẽ lưu luôn slotBooked)
                 billRepo.save(bill);
                 
             } catch (Exception e) {
-                // Nếu random trúng slot đã đặt thì bỏ qua, không sao cả
                 System.out.println("Skip trùng slot: " + e.getMessage());
             }
         }

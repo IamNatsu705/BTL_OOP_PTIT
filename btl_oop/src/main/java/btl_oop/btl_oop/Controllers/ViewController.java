@@ -13,23 +13,20 @@ public class ViewController {
 
     private final CourtSlotService courtSlotService;
 
-    // --- TRANG CHỦ ---
     @GetMapping("/")
     public String home(Model model) {
-        // Lấy danh sách sân thật từ DB hiển thị lên trang chủ
         model.addAttribute("courts", courtSlotService.getAllCourts());
         return "home";
     }
 
-    // --- TRANG ĐẶT SÂN ---
     @GetMapping("/booking")
     public String bookingPage(Model model) {
-        // Lấy danh sách sân đổ vào dropdown chọn sân
         model.addAttribute("courts", courtSlotService.getAllCourts());
-        
-        // Mặc định ngày chọn là hôm nay
         model.addAttribute("selectedDate", LocalDate.now().toString());
-        
         return "booking";
     }
+     @GetMapping("/contact")
+     public String contactPage(){
+        return "redirect:/";
+     }
 }

@@ -218,26 +218,17 @@
 
       // --- LOGIC TÌM KIẾM ---
       function searchTable() {
-        let input = document.getElementById("searchInput");
-        let filter = input.value.toUpperCase();
-        let table = document.getElementById("customerTable");
-        let tr = table.getElementsByTagName("tr");
+        const input = document.getElementById("searchInput");
+        const filter = input.value.toLowerCase();
+        const rows = document.querySelectorAll("#customerTable tbody tr");
 
-        // Bỏ qua dòng header (i=1)
-        for (let i = 1; i < tr.length; i++) {
-          // Tìm trong cột Thông tin (index 0) và Liên hệ (index 1)
-          let tdInfo = tr[i].getElementsByTagName("td")[0];
-          let tdContact = tr[i].getElementsByTagName("td")[1];
+        for (const row of rows) {
+          const text = row.innerText.toLowerCase();
 
-          if (tdInfo || tdContact) {
-            let txtInfo = tdInfo.textContent || tdInfo.innerText;
-            let txtContact = tdContact.textContent || tdContact.innerText;
-
-            if (txtInfo.toUpperCase().indexOf(filter) > -1 || txtContact.toUpperCase().indexOf(filter) > -1) {
-              tr[i].style.display = "";
-            } else {
-              tr[i].style.display = "none";
-            }
+          if (text.includes(filter)) {
+            row.style.display = "";
+          } else {
+            row.style.display = "none";
           }
         }
       }

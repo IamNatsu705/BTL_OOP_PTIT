@@ -26,12 +26,13 @@ public class Bill {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    // CascadeType.ALL: Lưu Bill là nó tự lưu luôn danh sách SlotBooked bên dưới
     @OneToMany(mappedBy = "bill", cascade = CascadeType.ALL)
     private List<SlotBooked> slotBookedList;
 
     @PrePersist
     public void onCreate() {
-        this.createdAt = LocalDateTime.now();
+        if (createdAt == null){
+            this.createdAt = LocalDateTime.now();
+        }
     }
 }

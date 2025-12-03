@@ -254,14 +254,14 @@
       function changeDate(days) {
         const d = new Date(state.date);
         d.setDate(d.getDate() + days);
-        state.date = d.toISOString().split("T")[0];
+        state.date = d.toLocaleDateString("en-CA");
         els.dateInput.value = state.date;
         loadData();
       }
 
       async function loadData() {
         resetSelection();
-        const today = new Date().toISOString().split("T")[0];
+        const today = new Date().toLocaleDateString("en-CA");
         const currentHour = new Date().getHours();
 
         // 1. Reset & Check Expired

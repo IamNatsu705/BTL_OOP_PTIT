@@ -35,7 +35,6 @@ public class CourtSlotService {
         return courtRepo.countByStatus("available");
     }
 
-    // lấy giá tiền
     public record SlotPriceDTO(Long courtId, String courtName, Long slotId, String timeFrame, BigDecimal price) {}
     public List<SlotPriceDTO> getSlotPrices(LocalDate date) {
         List<Court> courts = courtRepo.findAll();
@@ -49,7 +48,6 @@ public class CourtSlotService {
         }
         return slotPrices;
     }
-    // lấy slotcourt đã có người đặt trong ngày
     public record SlotBookedDTO(Long courId, Long slotId, BigDecimal price, String fullName, String phone){};
 
     public List<SlotBookedDTO> getSlotBooked(LocalDate date, boolean isAdmin) {
