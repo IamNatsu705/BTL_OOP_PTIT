@@ -53,20 +53,14 @@ public class AdminController {
 
         long totalBookings = allBills.size();
 
-        // 3. Thống kê HÔM NAY (Giả định đơn giản)
-        // Để chính xác cần viết Query trong Repository: findByDate...
-        // Ở đây mình lấy ví dụ số liệu mẫu hoặc tính sơ bộ
+
         LocalDateTime start = LocalDate.now().atStartOfDay();
         LocalDateTime end   = LocalDate.now().atTime(23, 59, 59);
-        long todayBookings = billRepo.findByCreatedAtBetween(start, end).size(); // Ví dụ: Cần query DB đếm số bill created_at hôm nay
+        long todayBookings = billRepo.findByCreatedAtBetween(start, end).size(); 
         List<BigDecimal> todayRevenues = billRepo.findByCreatedAtBetween(start, end).stream().map(Bill::getTotalAmount).collect(Collectors.toList()); 
         BigDecimal todayRevenue = new BigDecimal("0");
         for (BigDecimal x: todayRevenues) todayRevenue = todayRevenue.add(x);
-        // 4. Trạng thái SÂN NGAY LÚC NÀY (Real-time)
-        // Logic: Lấy giờ hiện tại -> Check xem bao nhiêu sân đang có khách
-        // (Tạm thời hardcode hoặc gọi service check)
-        long courtsOccupied = courtSlotService.getCourtAvailable(); 
-        long totalCourts = courtSlotService.getAllCourts().size();
+
         List<Court> courts = courtSlotService.getAllCourts();
         // Gửi sang View
         model.addAttribute("totalCustomers", totalCustomers);
